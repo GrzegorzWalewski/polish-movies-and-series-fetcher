@@ -10,6 +10,7 @@ import { serialeVip } from './seriale-vip.js';
 import { maxvod } from './maxvod.js';
 import { virpe } from './virpe.js';
 import { freedisc } from './freedisc.js';
+import { cdaHd } from './cda-hd.js';
 
 /** All enabled providers. Later batches add entries here. */
 export const providers: Provider[] = [
@@ -24,4 +25,5 @@ export const providers: Provider[] = [
   maxvod,
   virpe,
   freedisc,
+  cdaHd,
 ];
