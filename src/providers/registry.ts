@@ -8,6 +8,7 @@ import { bajeczki24 } from './bajeczki24.js';
 import { premiumsmart } from './premiumsmart.js';
 import { serialeVip } from './seriale-vip.js';
 import { maxvod } from './maxvod.js';
+import { virpe } from './virpe.js';
 
 /** All enabled providers. Later batches add entries here. */
 export const providers: Provider[] = [
@@ -20,4 +21,5 @@ export const providers: Provider[] = [
   premiumsmart,
   serialeVip,
   maxvod,
+  virpe,
 ];
