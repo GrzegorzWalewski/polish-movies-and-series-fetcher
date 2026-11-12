@@ -13,6 +13,7 @@ import { freedisc } from './freedisc.js';
 import { cdaHd } from './cda-hd.js';
 import { telekino } from './telekino.js';
 import { vider } from './vider.js';
+import { iitv } from './iitv.js';
 
 /** All enabled providers. Later batches add entries here. */
 export const providers: Provider[] = [
@@ -30,4 +31,5 @@ export const providers: Provider[] = [
   cdaHd,
   telekino,
   vider,
+  iitv,
 ];

@@ -7,20 +7,24 @@ https://zaluknij.cc/        # done — CF-blocked plain fetch, graceful warning 
 https://obejrzyj.to/        # done
 https://cda.pl/             # done — most popular content premium-gated
 https://vider.info/         # done — search API currently captcha/404-gated (site degraded since ~Nov 6); stream CDN verified working
+https://iitv.info/          # done — series-only; link freshness poor for old shows (dead hosters)
 #
 # DEAD (checked 2026-11-12, connection fails):
 # https://filmowo.xyz/
 #
+# REJECTED (checked 2026-11-12, accessible but no real catalog):
+# https://openclip.info/  # YouTube-search wrapper: JSFuck gate (GET /load.gif?id=<unix-ts> -> OK cookie)
+                          # unlocks the site, but results are YT promos/shorts/clickbait, zero cda tiles,
+                          # no series structure, encoding-corrupted titles — nothing to scrape
+#
 # TODO — next batch candidates (real catalogs, worth GitHub research):
 https://seriale.vip/        # full filman-style catalog
-https://iitv.info/          # series catalog
 https://maxvod.tv/          # video library
 https://telekino.top/       # TV/cinema films, WordPress-based
 https://virpe.cc/           # smaller catalog
 https://bajeczki24.pl/      # kids cartoons, no login
 https://premiumsmart.eu/    # small catalog
 https://freedisc.pl/        # user-upload hosting (host, not catalog)
-https://openclip.info/      # JS-rendered shell ("Wczytywanie...")
 #
 # LOW PRIORITY (aggregators / wrappers / hard-blocked):
 https://filmypolskie999.blogspot.com/p/film.html  # blogspot, likely just cda embeds
