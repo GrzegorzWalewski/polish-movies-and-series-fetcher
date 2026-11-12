@@ -2,6 +2,7 @@ import type { Provider } from '../types.js';
 import { ekinoTv } from './ekino-tv.js';
 import { obejrzyjTo } from './obejrzyj-to.js';
 import { zaluknij } from './zaluknij.js';
+import { cda } from './cda.js';
 
-/** All enabled providers (batch 1). Later batches add entries here. */
-export const providers: Provider[] = [ekinoTv, obejrzyjTo, zaluknij];
+/** All enabled providers. Later batches add entries here. */
+export const providers: Provider[] = [ekinoTv, obejrzyjTo, zaluknij, cda];
