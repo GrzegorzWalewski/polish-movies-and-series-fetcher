@@ -5,6 +5,7 @@ import {
   storeSolvedContext,
   buildSolvedContext,
   solveForHost,
+  type SolvedContext,
 } from './flaresolverr.js';
 
 export interface FetchOptions {
@@ -41,32 +42,48 @@ export function isCloudflareChallenge(html: string): boolean {
 }
 
 /**
- * True when the provider supplies its own credentials/identity (Cookie or an
- * explicit User-Agent). Those take precedence over FlareSolverr — mixing UAs
- * breaks cf_clearance binding, so such callers never get solved contexts.
+ * True when the provider pins its own identity via explicit headers
+ * (Cookie header or User-Agent). cf_clearance is UA-bound, so such callers
+ * never get solved-context injection or solving — their creds win untouched.
+ * Note: opts.cookie (session cookies) does NOT count — it merges with the
+ * FlareSolverr-solved cf_clearance instead.
  */
 export function providerOwnsIdentity(opts: FetchOptions): boolean {
-  return Boolean(
-    opts.cookie || opts.headers?.Cookie || opts.headers?.['User-Agent']
-  );
+  return Boolean(opts.headers?.Cookie || opts.headers?.['User-Agent']);
 }
 
-/** Ask FlareSolverr to solve, cache the context, return the HTML as Response */
-async function solveAndRespond(url: string, host: string): Promise<Response> {
-  const solution = await solveForHost(url);
-  const ctx = buildSolvedContext(solution, host);
-  if (ctx) storeSolvedContext(host, ctx);
-  return new Response(solution.html, {
-    status: solution.status,
-    headers: { 'content-type': 'text/html' },
-  });
+/**
+ * Build request headers, optionally merging a solved FlareSolverr context
+ * (its UA + cf_clearance cookie) with the provider's own session cookies.
+ * Pure — exported for tests.
+ */
+export function buildRequestHeaders(
+  opts: FetchOptions,
+  ctx?: SolvedContext | null
+): Record<string, string> {
+  const { headers = {}, cookie } = opts;
+  const mergedCookie = [ctx?.cookieHeader, cookie]
+    .filter(Boolean)
+    .join('; ');
+  return {
+    'User-Agent': ctx?.userAgent ?? DEFAULT_UA,
+    Accept:
+      'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
+    ...(mergedCookie ? { Cookie: mergedCookie } : {}),
+    ...headers,
+  };
 }
 
 /**
  * fetch wrapper: browser UA, timeout, retry with backoff.
  * Throws CloudflareBlockedError when response is a CF challenge page.
- * When FLARESOLVERR_URL is set, a challenge on a plain GET triggers one
- * FlareSolverr solve whose response is returned directly.
+ * When FLARESOLVERR_URL is set, a challenge on a GET (without a
+ * provider-pinned UA/Cookie header) triggers one FlareSolverr solve:
+ *  - anonymous fetches: the solved HTML is returned directly
+ *  - provider session cookies (opts.cookie): the request is re-fetched with
+ *    the solved cf_clearance + UA merged with those cookies, so logged-in
+ *    content comes back (the solver's own HTML is the anonymous session)
  */
 export async function fetchPage(
   url: string,
@@ -76,11 +93,53 @@ export async function fetchPage(
 
   const host = new URL(url).host;
   const method = (opts.method ?? 'GET').toUpperCase();
-  const eligible = !providerOwnsIdentity(opts) && method === 'GET';
+  const ownsIdentity = providerOwnsIdentity(opts);
+  const canSolve = method === 'GET' && !ownsIdentity;
   let solveErrorNote: string | undefined;
   let solveAttempted = false;
   const cfError = () =>
     new CloudflareBlockedError(site ?? host, cookieHint, solveErrorNote);
+
+  /** Solve the challenge; with provider cookies, re-fetch with merged creds */
+  const solveFallback = async (): Promise<Response> => {
+    if (!canSolve || !configured() || solveAttempted) throw cfError();
+    solveAttempted = true;
+    try {
+      const solution = await solveForHost(url);
+      const solvedCtx = buildSolvedContext(solution, host);
+      if (solvedCtx) storeSolvedContext(host, solvedCtx);
+      if (!cookie) {
+        return new Response(solution.html, {
+          status: solution.status,
+          headers: { 'content-type': 'text/html' },
+        });
+      }
+      // provider session cookies: re-fetch so they ride along with the
+      // solved cf_clearance (solution.html is the anonymous session)
+      const res = await fetch(url, {
+        headers: buildRequestHeaders(opts, solvedCtx),
+        signal: AbortSignal.timeout(timeoutMs),
+        redirect: 'follow',
+        ...(opts.method ? { method: opts.method } : {}),
+        ...(opts.body !== undefined ? { body: opts.body } : {}),
+      });
+      if (res.ok || opts.allowStatuses?.includes(res.status)) {
+        const body = await res.text();
+        if (isCloudflareChallenge(body)) {
+          throw new Error('challenge persists after solve');
+        }
+        return new Response(body, {
+          status: res.status,
+          statusText: res.statusText,
+          headers: res.headers,
+        });
+      }
+      throw new Error(`HTTP ${res.status} after solve`);
+    } catch (err) {
+      solveErrorNote = err instanceof Error ? err.message : String(err);
+      throw cfError();
+    }
+  };
 
   let lastError: unknown;
   for (let attempt = 0; attempt <= retries; attempt++) {
@@ -88,17 +147,9 @@ export async function fetchPage(
       await new Promise((r) => setTimeout(r, 1000 * attempt));
     }
     try {
-      const ctx = eligible ? getSolvedContext(host) : null;
+      const ctx = canSolve ? getSolvedContext(host) : null;
       const res = await fetch(url, {
-        headers: {
-          'User-Agent': DEFAULT_UA,
-          Accept:
-            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-          'Accept-Language': 'pl-PL,pl;q=0.9,en-US;q=0.8,en;q=0.7',
-          ...(ctx && { Cookie: ctx.cookieHeader, 'User-Agent': ctx.userAgent }),
-          ...(cookie ? { Cookie: cookie } : {}),
-          ...headers,
-        },
+        headers: buildRequestHeaders(opts, ctx),
         signal: AbortSignal.timeout(timeoutMs),
         redirect: 'follow',
         ...(opts.method ? { method: opts.method } : {}),
@@ -108,15 +159,7 @@ export async function fetchPage(
       if (res.ok || opts.allowStatuses?.includes(res.status)) {
         const body = await res.text();
         if (isCloudflareChallenge(body)) {
-          if (!eligible || !configured() || solveAttempted) throw cfError();
-          solveAttempted = true;
-          try {
-            return await solveAndRespond(url, host);
-          } catch (err) {
-            solveErrorNote =
-              err instanceof Error ? err.message : String(err);
-            throw cfError();
-          }
+          return await solveFallback();
         }
         // Re-wrap body so callers can still res.text()
         return new Response(body, {
@@ -130,15 +173,7 @@ export async function fetchPage(
       if (res.status === 403 || res.status === 503) {
         const body = await res.text();
         if (isCloudflareChallenge(body) || res.headers.get('server') === 'cloudflare') {
-          if (!eligible || !configured() || solveAttempted) throw cfError();
-          solveAttempted = true;
-          try {
-            return await solveAndRespond(url, host);
-          } catch (err) {
-            solveErrorNote =
-              err instanceof Error ? err.message : String(err);
-            throw cfError();
-          }
+          return await solveFallback();
         }
       }
       lastError = new Error(`HTTP ${res.status} for ${url}`);

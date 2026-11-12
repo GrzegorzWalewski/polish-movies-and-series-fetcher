@@ -3,14 +3,11 @@ import { describe, it, expect } from 'vitest';
 import {
   isCloudflareChallenge,
   providerOwnsIdentity,
+  buildRequestHeaders,
 } from '../src/utils/fetcher.js';
 import { CloudflareBlockedError } from '../src/types.js';
 
 describe('providerOwnsIdentity', () => {
-  it('is true when opts.cookie is set', () => {
-    expect(providerOwnsIdentity({ cookie: 'cf_clearance=x' })).toBe(true);
-  });
-
   it('is true when headers.Cookie is set', () => {
     expect(providerOwnsIdentity({ headers: { Cookie: 'a=b' } })).toBe(true);
   });
@@ -21,11 +18,63 @@ describe('providerOwnsIdentity', () => {
     ).toBe(true);
   });
 
+  it('is false for opts.cookie — session cookies merge with solved contexts', () => {
+    expect(providerOwnsIdentity({ cookie: 'PHPSESSID=x' })).toBe(false);
+  });
+
   it('is false for plain fetches (no cookie, no UA override)', () => {
     expect(providerOwnsIdentity({})).toBe(false);
     expect(providerOwnsIdentity({ headers: { 'Accept-Language': 'pl' } })).toBe(
       false
     );
+  });
+});
+
+describe('buildRequestHeaders', () => {
+  const solvedCtx = {
+    userAgent: 'Mozilla/5.0 (X11; Linux) Chrome/152.0.0.0',
+    cookieHeader: 'cf_clearance=solved',
+    expiresAt: Infinity,
+  };
+
+  it('uses default UA and no Cookie for plain fetches', () => {
+    const h = buildRequestHeaders({});
+    expect(h['User-Agent']).toContain('Chrome/124');
+    expect(h.Cookie).toBeUndefined();
+    expect(h.Accept).toContain('text/html');
+  });
+
+  it('injects solved context UA + cookie', () => {
+    const h = buildRequestHeaders({}, solvedCtx);
+    expect(h['User-Agent']).toContain('Chrome/152');
+    expect(h.Cookie).toBe('cf_clearance=solved');
+  });
+
+  it('merges solved cf_clearance with provider session cookies', () => {
+    const h = buildRequestHeaders(
+      { cookie: 'PHPSESSID=s1; BKD_REMEMBER=r1' },
+      solvedCtx
+    );
+    expect(h.Cookie).toBe('cf_clearance=solved; PHPSESSID=s1; BKD_REMEMBER=r1');
+    expect(h['User-Agent']).toContain('Chrome/152');
+  });
+
+  it('sends provider cookies unchanged when no context', () => {
+    const h = buildRequestHeaders({ cookie: 'PHPSESSID=s1' });
+    expect(h.Cookie).toBe('PHPSESSID=s1');
+    expect(h['User-Agent']).toContain('Chrome/124');
+  });
+
+  it('identity-pinning callers get no context (fetcher passes ctx=null)', () => {
+    const h = buildRequestHeaders(
+      {
+        cookie: 'a=1',
+        headers: { 'User-Agent': 'PlayStation 4', Referer: 'https://x.pl/' },
+      }
+    );
+    expect(h['User-Agent']).toBe('PlayStation 4');
+    expect(h.Cookie).toBe('a=1');
+    expect(h.Referer).toBe('https://x.pl/');
   });
 });
 
