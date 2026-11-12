@@ -17,13 +17,6 @@ function cookieHeader(): string | undefined {
   return process.env[COOKIE_ENV]?.trim() || undefined;
 }
 
-function defaultUa(): string {
-  return (
-    process.env[UA_ENV]?.trim() ||
-    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
-  );
-}
-
 function cookieHint(): string {
   return `${COOKIE_ENV}=<cf_clearance cookie copied from your browser devtools> and ${UA_ENV}=<that browser's exact User-Agent>`;
 }
@@ -166,9 +159,12 @@ function fetchOpts(): {
   site: string;
   cookieHint: string;
 } {
+  const ua = process.env[UA_ENV]?.trim();
   return {
     headers: {
-      'User-Agent': defaultUa(),
+      // No UA by default: lets fetchPage's FlareSolverr path apply its solved
+      // context; when CDA_HD_CC_UA is set the provider owns its identity.
+      ...(ua ? { 'User-Agent': ua } : {}),
       'Accept-Language': 'pl,en;q=0.8',
       ...(cookieHeader() ? { Cookie: cookieHeader()! } : {}),
     },

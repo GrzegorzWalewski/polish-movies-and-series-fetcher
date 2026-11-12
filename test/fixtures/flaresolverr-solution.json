@@ -1,0 +1,52 @@
+{
+  "status": "ok",
+  "message": "Challenge solved!",
+  "start_timestamp": 1762930000.123,
+  "end_timestamp": 1762930005.456,
+  "version": "v3.3.21",
+  "solution": {
+    "url": "https://filman.cc/search?phrase=dune",
+    "status": 200,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8"
+    },
+    "response": "<!DOCTYPE html><html><head><title>Filman - search results</title></head><body>real page</body></html>",
+    "cookies": [
+      {
+        "name": "cf_clearance",
+        "value": "abc123_clearance",
+        "domain": ".filman.cc",
+        "path": "/",
+        "expires": 1893456000,
+        "size": 26,
+        "httpOnly": true,
+        "secure": true,
+        "session": false,
+        "sameSite": "None"
+      },
+      {
+        "name": "unrelated",
+        "value": "x",
+        "domain": ".example.com",
+        "path": "/",
+        "expires": 1893456000,
+        "httpOnly": false,
+        "secure": false,
+        "session": false,
+        "sameSite": "Lax"
+      },
+      {
+        "name": "PHPSESSID",
+        "value": "sess1",
+        "domain": "filman.cc",
+        "path": "/",
+        "expires": -1,
+        "httpOnly": true,
+        "secure": false,
+        "session": true,
+        "sameSite": "Lax"
+      }
+    ],
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+  }
+}

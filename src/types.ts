@@ -43,12 +43,17 @@ export interface Provider {
 export class CloudflareBlockedError extends Error {
   constructor(
     public site: string,
-    cookieHint?: string
+    cookieHint?: string,
+    /** reason appended when a FlareSolverr solve was attempted and failed */
+    flaresolverrNote?: string
   ) {
+    const solveFailed = flaresolverrNote
+      ? ` — FlareSolverr solve failed: ${flaresolverrNote}`
+      : '';
     super(
       cookieHint
-        ? `${site} is protected by Cloudflare — set ${cookieHint} to access it`
-        : `${site} is protected by Cloudflare — headless bypass not supported yet (FlareSolverr integration planned)`
+        ? `${site} is protected by Cloudflare — set ${cookieHint} to access it${solveFailed}`
+        : `${site} is protected by Cloudflare — set FLARESOLVERR_URL (e.g. http://localhost:8191) to auto-bypass, or copy cf_clearance cookies manually${solveFailed}`
     );
     this.name = 'CloudflareBlockedError';
   }

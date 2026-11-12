@@ -9,7 +9,8 @@ export interface ProviderAttempt<T> {
 /**
  * Runs one provider search, converting every failure mode into a warning
  * so a single dead/blocked site never crashes the whole run:
- *  - Cloudflare challenge -> clear message (FlareSolverr hook planned)
+ *  - Cloudflare challenge -> clear message; auto-solved via FlareSolverr when
+ *    FLARESOLVERR_URL is set (solved cf_clearance cookies + UA cached per host)
  *  - timeout              -> "timeout"
  *  - any other error      -> error message
  */
