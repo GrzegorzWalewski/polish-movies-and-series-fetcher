@@ -4,6 +4,7 @@ import { obejrzyjTo } from './obejrzyj-to.js';
 import { zaluknij } from './zaluknij.js';
 import { cda } from './cda.js';
 import { filman } from './filman.js';
+import { bajeczki24 } from './bajeczki24.js';
 
 /** All enabled providers. Later batches add entries here. */
-export const providers: Provider[] = [ekinoTv, obejrzyjTo, zaluknij, cda, filman];
+export const providers: Provider[] = [ekinoTv, obejrzyjTo, zaluknij, cda, filman, bajeczki24];

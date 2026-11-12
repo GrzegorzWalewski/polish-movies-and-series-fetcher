@@ -1,20 +1,29 @@
-https://filman.cc/
-https://ekino-tv.pl/
-https://zaluknij.cc/
-https://obejrzyj.to/
-https://seriale.vip/
-https://freedisc.pl/
-https://virpe.cc/
-https://openclip.info/
-https://bajeczki24.pl/
-https://premiumsmart.eu/
-https://filmypolskie999.blogspot.com/p/film.html
-https://vider.info/
-https://telekino.top/
-https://filmowo.xyz/
-https://elmorreflix.netlify.app/
-http://cda-hd.cc/
-https://iitv.info/
-https://flowflix.vercel.app/
-https://maxvod.tv/
-https://cda.pl/
+# Polish streaming sites — status as of 2026-11-12
+#
+# DONE (providers in src/providers/):
+https://filman.cc/          # done — set FILMAN_CC_COOKIE + FILMAN_CC_UA in .env (cf_clearance, UA+IP bound)
+https://ekino-tv.pl/        # done
+https://zaluknij.cc/        # done — CF-blocked plain fetch, graceful warning (cookie env pattern reusable)
+https://obejrzyj.to/        # done
+https://cda.pl/             # done — most popular content premium-gated
+#
+# DEAD (checked 2026-11-12, connection fails):
+# https://filmowo.xyz/
+#
+# TODO — next batch candidates (real catalogs, worth GitHub research):
+https://vider.info/         # big PL portal, Python downloader reference exists
+https://seriale.vip/        # full filman-style catalog
+https://iitv.info/          # series catalog
+https://maxvod.tv/          # video library
+https://telekino.top/       # TV/cinema films, WordPress-based
+https://virpe.cc/           # smaller catalog
+https://bajeczki24.pl/      # kids cartoons, no login
+https://premiumsmart.eu/    # small catalog
+https://freedisc.pl/        # user-upload hosting (host, not catalog)
+https://openclip.info/      # JS-rendered shell ("Wczytywanie...")
+#
+# LOW PRIORITY (aggregators / wrappers / hard-blocked):
+https://filmypolskie999.blogspot.com/p/film.html  # blogspot, likely just cda embeds
+https://elmorreflix.netlify.app/                  # static frontend over APIs
+https://flowflix.vercel.app/                      # FlowFlixWeb demo — see github-projects
+http://cda-hd.cc/                                 # CF 403 (checked 2026-11-12)

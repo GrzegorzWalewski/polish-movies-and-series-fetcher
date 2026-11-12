@@ -1,0 +1,45 @@
+{
+  "hits": [
+    {
+      "path": "/filmy/sci-fi/diuna/",
+      "title": "Diuna",
+      "releaseYear": 2021,
+      "posterPath": "/tu/tu1.jpg",
+      "categories": ["Sci-Fi"],
+      "shortDescription": "Adaptacja klasycznej powieści Franka Herberta."
+    },
+    {
+      "path": "/filmy/sci-fi/diuna-czesc-druga/",
+      "title": "Diuna: Część druga",
+      "releaseYear": 2024,
+      "posterPath": "/tu/tu2.jpg",
+      "categories": ["Sci-Fi"],
+      "shortDescription": "Kontynuacja historii Paulo Atrydy."
+    },
+    {
+      "path": "/seriale/wiedzmin/",
+      "title": "Wiedźmin",
+      "releaseYear": 2019,
+      "posterPath": "/tu/tu3.jpg",
+      "categories": ["Fantasy"],
+      "shortDescription": "Losy Geralt z Rivii."
+    },
+    {
+      "path": "/bajki/lisa-i-ptak/",
+      "title": "Lis i ptak",
+      "releaseYear": 2022,
+      "posterPath": "/tu/tu4.jpg",
+      "categories": ["Animacja"],
+      "shortDescription": "Przyjaźń lisa i ptaka."
+    },
+    {
+      "path": "/inne/nieznane/",
+      "title": "Nieznana ścieżka",
+      "releaseYear": 2020,
+      "posterPath": "/tu/tu5.jpg",
+      "categories": [],
+      "shortDescription": ""
+    }
+  ],
+  "estimatedTotalHits": 5
+}
