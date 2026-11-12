@@ -21,6 +21,8 @@ export interface FetchOptions {
   retries?: number;
   /** base URL for detecting Cloudflare in error messages */
   site?: string;
+  method?: string;
+  body?: string;
 }
 
 /** True when an HTML body looks like a Cloudflare challenge page */
@@ -64,6 +66,8 @@ export async function fetchPage(
         },
         signal: AbortSignal.timeout(timeoutMs),
         redirect: 'follow',
+        ...(opts.method ? { method: opts.method } : {}),
+        ...(opts.body !== undefined ? { body: opts.body } : {}),
       });
 
       if (res.ok) {
