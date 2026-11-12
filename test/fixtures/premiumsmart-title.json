@@ -1,0 +1,39 @@
+{
+  "title": {
+    "id": 1195835,
+    "name": "Avengers",
+    "original_title": "The Avengers",
+    "is_series": false,
+    "year": 2012,
+    "imdb_id": "tt0848228",
+    "videos": [
+      {
+        "src": "https://youtube.com/embed/eOrNdBpGMv8",
+        "category": "trailer",
+        "order": 90
+      },
+      {
+        "src": "https://bysetayico.com/e/esttwgf6k5nl/the-avengers-2012-multi-1080p",
+        "language_type": "Lektor PL",
+        "quality": "1080p",
+        "category": "full",
+        "order": 1
+      },
+      {
+        "src": "//vidara.to/e/abc123",
+        "language_type": "Napisy PL",
+        "quality": "720p",
+        "category": "full",
+        "order": 2
+      },
+      {
+        "src": "https://bysetayico.com/e/esttwgf6k5nl/the-avengers-2012-multi-1080p",
+        "language_type": "Duplikat",
+        "quality": "1080p",
+        "category": "full",
+        "order": 3
+      }
+    ]
+  },
+  "credits": {}
+}

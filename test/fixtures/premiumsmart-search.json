@@ -1,0 +1,32 @@
+{
+  "results": [
+    {
+      "id": 25474,
+      "name": "Wiedźmin",
+      "is_series": true,
+      "year": 2019,
+      "imdb_id": "tt5180504",
+      "model_type": "title"
+    },
+    {
+      "id": 28414,
+      "name": "Szczury: Opowieść ze świata Wiedźmina",
+      "is_series": false,
+      "year": 2025,
+      "model_type": "title"
+    },
+    {
+      "id": 1195835,
+      "name": "Avengers",
+      "is_series": false,
+      "release_date": "2012-04-25",
+      "model_type": "title"
+    },
+    {
+      "id": 999,
+      "name": "Tylko nazwa bez id",
+      "is_series": false,
+      "model_type": "other"
+    }
+  ]
+}

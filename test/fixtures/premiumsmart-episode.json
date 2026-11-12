@@ -1,0 +1,21 @@
+{
+  "episode": {
+    "episode_number": 1,
+    "name": "Początek końca",
+    "has_sources": true,
+    "videos": [
+      {
+        "src": "https://bysetayico.com/e/sodsdghfv448/wiedzmin-s01e01-2019-1080p",
+        "language_type": "Lektor PL",
+        "quality": "1080p",
+        "category": "full",
+        "order": 1
+      },
+      {
+        "src": "https://youtube.com/embed/xyz789",
+        "category": "trailer",
+        "order": 2
+      }
+    ]
+  }
+}
