@@ -110,7 +110,9 @@ program
                 season,
                 episode,
               }),
-            60000
+            // filman's token endpoint has a ~1-2min rate-limit cooldown that
+            // the provider waits out — give it room
+            120000
           )
         )
       );

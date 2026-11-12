@@ -25,15 +25,16 @@ const params = {
 };
 
 describe('filman.cc search parsing', () => {
-  it('parses movie and series results with years', () => {
+  it('parses movie and series results with years (PL / original title)', () => {
     const items = parseSearchHtml(fixture('filman-search.html'));
     expect(items).toHaveLength(4);
-    expect(items[0]).toEqual({
-      title: 'Diuna (2021)',
-      url: 'https://filman.cc/m/diuna-2021',
+    expect(items[1]).toEqual({
+      title: 'Diuna / Dune (2021)',
+      url: 'https://filman.cc/m/jG8rb9XL7VZ4BeyFTDpKtzwlE',
       type: 'movie',
     });
     expect(items[3].type).toBe('tv');
+    expect(items[3].title).toBe('Diuna: Proroctwo / Dune: Prophecy (2024)');
   });
 
   it('filters movie vs series by /m/ and /s/ path', () => {
@@ -46,14 +47,17 @@ describe('filman.cc search parsing', () => {
     const items = parseSearchHtml(fixture('filman-search.html'));
     const movies = items.filter((i) => i.type === 'movie');
     const matches = pickMatches(movies, params);
-    expect(matches[0].url).toBe('https://filman.cc/m/diuna-2021');
+    expect(matches[0].url).toBe('https://filman.cc/m/jG8rb9XL7VZ4BeyFTDpKtzwlE');
   });
 });
 
 describe('filman.cc episode navigation', () => {
-  it('finds episode url by [sXeY] tag', () => {
+  it('finds episode url by zero-padded [sXXeYY] tag', () => {
     expect(findEpisodeUrl(fixture('filman-series.html'), 1, 3)).toBe(
-      'https://filman.cc/e/diuna-serial-2019-odcinek-3'
+      'https://filman.cc/e/dune-prophecy/223812/the-high-handed-enemy/1690322'
+    );
+    expect(findEpisodeUrl(fixture('filman-series.html'), 1, 1)).toBe(
+      'https://filman.cc/e/dune-prophecy/221475/sisterhood-above-all/1690322'
     );
     expect(findEpisodeUrl(fixture('filman-series.html'), 2, 1)).toBeNull();
   });

@@ -36,21 +36,28 @@ const reqHeaders = (referer: string): Record<string, string> => ({
     : {}),
 });
 
-/** Parse filman search results (#advanced-search). */
+/**
+ * Parse filman search results (#item-list grid). Each item is a bootstrap col
+ * div: .poster > a[href="/m/..."|"/s/..."] with .film_title / .film_year as
+ * siblings of .poster. Titles are "PL title / Original title".
+ */
 export function parseSearchHtml(html: string): (SiteMatch & { type: 'movie' | 'tv' })[] {
   const $ = cheerio.load(html);
   const results: (SiteMatch & { type: 'movie' | 'tv' })[] = [];
   const seen = new Set<string>();
 
-  $('#advanced-search a[href*="/m/"], #advanced-search a[href*="/s/"]').each((_, el) => {
+  $('a[href*="/m/"], a[href*="/s/"]').each((_, el) => {
     const $el = $(el);
     const href = $el.attr('href') ?? '';
+    // film_title/film_year live in the item container, not inside the anchor
+    const $box = $el.closest('div[class*="col-"]');
     const title =
-      $el.find('.film_title').text().trim() ||
+      $box.find('.film_title').text().trim() ||
+      $el.attr('data-title')?.trim() ||
       $el.attr('title')?.trim() ||
-      $el.text().trim().split('\n')[0].trim();
+      '';
     const type: 'movie' | 'tv' = href.includes('/s/') ? 'tv' : 'movie';
-    const year = $el.find('.film_year').text().trim();
+    const year = $box.find('.film_year').text().trim();
 
     if (title && href && !seen.has(href)) {
       seen.add(href);
@@ -68,15 +75,17 @@ function absolutize(href: string): string {
   return href.startsWith('http') ? href : BASE_URL + href;
 }
 
-/** Find episode link ([s01e02] tag) from a series page. */
+/** Find episode link ([s01e02] tag, padding optional) from a series page. */
 export function findEpisodeUrl(html: string, season: number, episode: number): string | null {
   const $ = cheerio.load(html);
-  const tag = `[s${season}e${episode}]`;
+  const re = new RegExp(`\\[s0?${season}e0?${episode}\\]`, 'i');
   let found: string | null = null;
   $('#episode-list a').each((_, el) => {
     if (found) return;
-    if ($(el).text().includes(tag) || ($(el).attr('href') ?? '').includes(tag.toLowerCase())) {
-      found = absolutize($(el).attr('href') ?? '');
+    const text = $(el).text();
+    const href = $(el).attr('href') ?? '';
+    if (re.test(text) || re.test(href)) {
+      found = absolutize(href);
     }
   });
   return found;
@@ -174,7 +183,7 @@ async function resolveTokenLink(
   await sleep(1100);
 
   const tokenUrl = `${BASE_URL}/link/token?link_id=${encodeURIComponent(row.linkId!)}&rt=${encodeURIComponent(routeToken)}`;
-  const res = await fetchPage(tokenUrl, {
+  const reqOpts = {
     headers: {
       ...reqHeaders(pageUrl),
       Accept: 'application/json, text/javascript, */*; q=0.01',
@@ -183,7 +192,22 @@ async function resolveTokenLink(
     cookie: ck,
     site: 'filman.cc',
     retries: 0,
-  });
+  };
+
+  // the endpoint rate-limits bursts (HTTP 429 "Za szybko, spróbuj za chwilę")
+  // with a cooldown in the 30s-2min range — wait it out once
+  let res: Response | null = null;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      res = await fetchPage(tokenUrl, reqOpts);
+      break;
+    } catch (err) {
+      if (!(err instanceof Error) || !err.message.includes('HTTP 429')) return null;
+      if (attempt === 0) await sleep(60000);
+    }
+  }
+  if (!res) return null;
+
   const json = JSON.parse(await res.text()) as { url?: string };
   if (!json.url) return null;
 
@@ -245,20 +269,12 @@ export const filman: Provider = {
       cookieHint: cookieHint(),
     };
 
-    // endpoint has moved between /wyszukiwarka and /item over the years
-    let res: Response;
-    try {
-      res = await fetchPage(
-        `${BASE_URL}/wyszukiwarka?phrase=${encodeURIComponent(query)}`,
-        fetchOpts
-      );
-    } catch (err) {
-      if (!(err instanceof Error) || !err.message.includes('HTTP 404')) throw err;
-      res = await fetchPage(
-        `${BASE_URL}/item?phrase=${encodeURIComponent(query)}`,
-        fetchOpts
-      );
-    }
+    // /search is the current endpoint (older /wyszukiwarka & /item now just
+    // soft-redirect to the homepage with HTTP 200 — no 404 to trigger a fallback)
+    const res = await fetchPage(
+      `${BASE_URL}/search?phrase=${encodeURIComponent(query)}`,
+      fetchOpts
+    );
 
     const html = await res.text();
     // login wall — without an account filman shows the login page instead
