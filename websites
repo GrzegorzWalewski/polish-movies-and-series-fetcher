@@ -17,6 +17,7 @@ https://premiumsmart.eu/    # done — JSON API behind Laravel session cookie
 https://freedisc.pl/        # done — user-upload hosting; geo-blocked from current IP (graceful warning)
 https://cda-hd.cc/          # done — set CDA_HD_COOKIE + CDA_HD_UA in .env (cf_clearance, UA+IP bound)
 https://dokumentalne.net/   # done — movies (documentaries) only; WP REST search + ok.ru embeds
+https://35mm.online/        # done — official WFDiF VOD; page-URL output (playback needs free SSO login)
 #
 # DEAD (checked 2026-11-12, connection fails):
 # https://filmowo.xyz/
@@ -28,13 +29,20 @@ https://dokumentalne.net/   # done — movies (documentaries) only; WP REST sear
 # https://vizjer.pl/      # PARKED domain — 5.5KB "Redirecting..." shell POSTs geo data to
 # https://filser.cc/      # router.parklogic.com which routes traffic to affiliate pages
 # https://zerknij.tv/     # (portlandplazapenthouse.com/...). All three clones identical — no catalog exists
+# https://filmypolskie999.blogspot.com/p/film.html
+                          # memorial blog "FilmyPolskie888" — 336 posts are obituaries of Polish film
+                          # people ("Surname, Firstname" titles, birth/death year labels) + history
+                          # posts; film-title searches return 0 or incidental people hits; only 3 YT
+                          # embeds across 100 posts, zero cda — no film/series catalog exists
+# https://zobaczfilm.com/  # JS-challenge shell only — every request (even with cookies) returns a
+                          # 476-byte "Loading..." page that bounces through ?ch=1&js=<JWT> to a 302
+                          # at theod-eqi.com/zokvisitor/...?campaignid=... (ad-traffic monetization);
+                          # infinite loop, no site behind the gate
+# https://filmowo.club/    # 302 -> ww38.filmowo.club -> 410 Gone (parking, same as filmowo.xyz)
 #
-# TODO — next batch candidates (real catalogs, worth GitHub research):
-# (none — all viable sites from the 2026-11-12 triage are done or rejected;
-#  remaining unimplemented: filmypolskie999.blogspot.com, 35mm.online, wfdif.online,
-#  zobaczfilm.com, filmowo.club — see memory for triage notes)
+# TODO — none. The site list is fully resolved: every entry is implemented,
+# dead, or rejected. wfdif.online is covered by 35mm.online (301 -> :8080).
 #
 # LOW PRIORITY (aggregators / wrappers / hard-blocked):
-https://filmypolskie999.blogspot.com/p/film.html  # blogspot, likely just cda embeds
 https://elmorreflix.netlify.app/                  # static frontend over APIs
 https://flowflix.vercel.app/                      # FlowFlixWeb demo — see github-projects

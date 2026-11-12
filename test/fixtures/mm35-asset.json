@@ -1,0 +1,857 @@
+{
+  "statusCode": 200,
+  "culture": "pl-pl",
+  "content": {
+    "loginUrl": "/login",
+    "showOnBox": {
+      "isCast": false,
+      "roleName": "Reżyseria",
+      "persons": [
+        "Wawrzyniec Kostrzewski"
+      ],
+      "castItems": null
+    },
+    "atdId": 4041,
+    "image": {
+      "url": "https://cms.35mm.online/media/vxvj0ze1/walizka_02_gallery.jpg?crop=0,0,0.25000000000000006,0.0000000000000001609438000748&cropmode=percentage&width=2000&height=1500&rnd=133293894754100000",
+      "title": null,
+      "redirect": null,
+      "author": "",
+      "alt": "Galeria"
+    },
+    "title": "Walizka",
+    "genre": [
+      "spektakl"
+    ],
+    "musicGenre": null,
+    "country": "Polska",
+    "year": "2013",
+    "duration": 67,
+    "categoryAge": {
+      "img": "https://cms.35mm.online/media/ck0daa4x/polish_tv_rating_system_16_2011.svg",
+      "name": "Od 16 lat",
+      "value": "16"
+    },
+    "quality": {
+      "img": "https://cms.35mm.online/media/q2bpm2gl/hd.svg",
+      "name": "W rozdzielczości HD"
+    },
+    "language": {
+      "sound": null,
+      "subtitle": [
+        {
+          "fullName": "ita",
+          "shortName": "ita"
+        },
+        {
+          "fullName": "eng",
+          "shortName": "eng"
+        }
+      ],
+      "audioDescription": true,
+      "deaf": false
+    },
+    "lead": "Fransua Żako poszukuje prawdy. Prowadzony przez Narratora i Automatyczną Sekretarkę, pokonuje drogę z domu do Muzeum Zagłady, aby tam, na walizce z Auschwitz, rozpoznać nazwisko swojego ojca. To droga ku odzyskaniu pamięci i tożsamości. Historia Fransua Żako opowiadana jest przez tajemniczego Narratora, który wraz ze swoją towarzyszką, Automatyczną Sekretarką, śledzi, przeżywa i komentuje wszystkie etapy drogi Fransua. Walizka stawia szersze pytanie o społeczną pielęgnację pamięci o zagładzie i Holocauście.",
+    "storage": null,
+    "additionalInfo": null,
+    "storageNotes": null,
+    "description": "<p>Fransua Żako poszukuje prawdy. Prowadzony przez Narratora i Automatyczną Sekretarkę, pokonuje drogę z domu do Muzeum Zagłady, aby tam, na jednej z walizek z Auschwitz, rozpoznać nazwisko swojego ojca. Nie jest to jednak zwykły spacer, ale droga ku odzyskaniu pamięci i tożsamości. Prawda, której brakowało mu przez całe życie, nagle uderzy w niego z niebywałą siłą. Ten gwałtowny zwrot sprawi, że powrócą wspomnienia, sytuacje, pytania, które przez lata nie mogły doczekać się odpowiedzi. Przed oczami bohatera przepłynie całe życie: dziecięce wspomnienia, sny, spotkania, podróże, różne etapy nieporadnej drogi ku odkryciu samego siebie. Spacer do Muzeum staje się podróżą przez pamięć, a miejsca, w których zatrzyma się Fransua, realne lub nierealne, stworzą swoistą mapę mentalną, utkaną z wątpliwości, obaw i nadziei związanych z otwarciem walizki ojca, jedynej pamiątki po nim. Niesamowita konstrukcja sztuki, jej struktura i język, który o Holokauście mówi w odważny i nowatorski sposób, chronią sztukę przed nadmiernym patosem i smutkiem. Historia Fransua Żako opowiadana jest przez tajemniczego Narratora, który wraz ze swoją towarzyszką, Automatyczną Sekretarką, śledzi, przeżywa i komentuje wszystkie etapy drogi Fransua. Dwutorowość sztuki i silna narracyjna rama sprawia, że ta oparta na faktach historia nabiera wewnętrznej dynamiki, tworzy z pozoru lekką, ale niezwykle głęboką i aktualną opowieść. Walizka stawia także szersze pytanie o społeczną pielęgnację pamięci o Zagładzie. Jest jak pytanie, postawione każdemu, kto bezpiecznie i bezrefleksyjnie chowa ją do ciemnego archiwum.</p>",
+    "cast": [
+      {
+        "isCast": false,
+        "roleName": "Produkcja",
+        "persons": [
+          "Wytwórnia Filmów Dokumentalnych i Fabularnych"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Reżyseria",
+        "persons": [
+          "Wawrzyniec Kostrzewski"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Autor",
+        "persons": [
+          "Małgorzata Sikorska-Miszczuk"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Zdjęcia",
+        "persons": [
+          "Witold Płóciennik"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Montaż",
+        "persons": [
+          "Jakub Motylewski"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Redakcja",
+        "persons": [
+          "Krzysztof Domagalik"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Dźwięk",
+        "persons": [
+          "Tomasz Wieczorek",
+          "Michał Robaczewski"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Muzyka",
+        "persons": [
+          "Piotr Łabonarski"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Scenografia",
+        "persons": [
+          "Ewa Gdowiok"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Kostiumy",
+        "persons": [
+          "Elżbieta Radke"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Charakteryzacja",
+        "persons": [
+          "Iwona Karpińska",
+          "Milena Jura"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": false,
+        "roleName": "Kierownictwo produkcji",
+        "persons": [
+          "Paweł Mantorski"
+        ],
+        "castItems": null
+      },
+      {
+        "isCast": true,
+        "roleName": "Obsada",
+        "persons": null,
+        "castItems": [
+          {
+            "person": "Adam Ferency",
+            "role": "Fransua Żako; Pantofelnik"
+          },
+          {
+            "person": "Krzysztof Globisz",
+            "role": "Narrator"
+          },
+          {
+            "person": "Halina Łabonarska",
+            "role": "Przewodniczka"
+          },
+          {
+            "person": "Marta Król-Gajko",
+            "role": "Automatyczna sekretarka; Żaklin"
+          },
+          {
+            "person": "Łukasz Lewandowski",
+            "role": "Poeta"
+          }
+        ]
+      }
+    ],
+    "premier": "26.04.2015",
+    "images": [
+      {
+        "url": "https://cms.35mm.online/media/lpzn2bst/walizka_01_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285564100000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/vxvj0ze1/walizka_02_gallery.jpg?crop=0,0,0.25000000000000006,0.0000000000000001609438000748&cropmode=percentage&width=2000&height=1500&rnd=133293894754100000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/ze5nwdvn/walizka_03_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285569430000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/nbbnzvw3/walizka_04_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285573000000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/lvicvfqa/walizka_05_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285575500000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/aw0fkvrz/walizka_06_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285578000000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/kwgffptj/walizka_07_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285580830000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/lcdkuzxf/walizka_08_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285583000000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/uvcgyxey/walizka_09_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285585200000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/x5ingcxp/walizka_10_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285587700000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/mzkmkufh/walizka_11_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285589900000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/3zllxzhn/walizka_12_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285591770000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/hgsnlw3a/walizka_13_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285595070000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/sxxppprw/walizka_14_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285597700000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/nscpempu/walizka_15_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285600370000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/0yqmsp2o/walizka_16_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102285602530000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      }
+    ],
+    "awords": [],
+    "reletedContent": {
+      "type": null,
+      "header": "Podobne",
+      "headerUrl": null,
+      "items": [
+        {
+          "title": "Wizyta",
+          "subtitle": "Polska | 2015",
+          "showOnBox": {
+            "isCast": false,
+            "roleName": "Reżyseria",
+            "persons": [
+              "Agnieszka Maskovic"
+            ],
+            "castItems": null
+          },
+          "description": "Jurek udaje się w podróż w rodzinne strony po kilku latach nieobecności. Dla wykształconego w dużym mieście bohatera wizyta w domu rodziców  jest zarówno wyzwaniem i koniecznością. Aby pokonać życiowy kryzys, młody mężczyzna zmierzy się ze wspomnieniami z przeszłości. To opowieść o dojrzewaniu tocząca się się w rytmie podróży nocnym pociągiem.",
+          "url": "/vod/teatroteka/wizyta",
+          "image": {
+            "url": "https://cms.35mm.online/media/uh1h2lug/wizyta_001_gallery.jpg?crop=0.3122884699261218,0,0.055079542920397968,0.15714967544864458&cropmode=percentage&width=2000&height=1500&rnd=133293016895400000",
+            "title": null,
+            "redirect": null,
+            "author": "",
+            "alt": "Opis Obrazka"
+          },
+          "categoryImage": null,
+          "defaultIcon": null,
+          "type": "Asset",
+          "lead": "Jurek udaje się w podróż w rodzinne strony po kilku latach nieobecności. Dla wykształconego w dużym mieście bohatera wizyta w domu rodziców  jest zarówno wyzwaniem i koniecznością. Aby pokonać życiowy kryzys, młody mężczyzna zmierzy się ze wspomnieniami z przeszłości. To opowieść o dojrzewaniu tocząca się się w rytmie podróży nocnym pociągiem.",
+          "favoriteModel": {
+            "url": "umbraco/api/favorites",
+            "id": 113141,
+            "isFavorite": false,
+            "translations": {
+              "general.Favorite.Add": "Dodaj do ulubionych",
+              "general.Favorite.Delete": "Usuń z ulubionych"
+            }
+          },
+          "selected": false,
+          "watch": "Odtwarzaj",
+          "duration": 2580,
+          "signature": "",
+          "atdId": 4039,
+          "avaliable": null,
+          "movieType": false,
+          "jumpTime": null,
+          "lang": null,
+          "lesson": null,
+          "prices": null,
+          "showOutVod": false,
+          "isPremium": false,
+          "isSubscription": false
+        },
+        {
+          "title": "Tajny klient",
+          "subtitle": "Polska | 2016",
+          "showOnBox": {
+            "isCast": false,
+            "roleName": "Reżyseria",
+            "persons": [
+              "Wojciech Pitala"
+            ],
+            "castItems": null
+          },
+          "description": "Bohaterem sztuki jest „tajny klient”, osoba wynajmowana przez pracodawców do sprawdzenia jakości pracy podległych im pracowników.  To metoda dwuznaczna moralnie. Zasadza się na prowokacji, kłamstwie, wprowadzeniu w błąd, wykryciu i wykorzystaniu słabości kontrolowanego.",
+          "url": "/vod/teatroteka/tajny-klient",
+          "image": {
+            "url": "https://cms.35mm.online/media/4x3m1rnf/tajny_klient_001_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133102282435730000",
+            "title": null,
+            "redirect": null,
+            "author": "",
+            "alt": "Opis Obrazka"
+          },
+          "categoryImage": null,
+          "defaultIcon": null,
+          "type": "Asset",
+          "lead": "Bohaterem sztuki jest „tajny klient”, osoba wynajmowana przez pracodawców do sprawdzenia jakości pracy podległych im pracowników.  To metoda dwuznaczna moralnie. Zasadza się na prowokacji, kłamstwie, wprowadzeniu w błąd, wykryciu i wykorzystaniu słabości kontrolowanego.",
+          "favoriteModel": {
+            "url": "umbraco/api/favorites",
+            "id": 113151,
+            "isFavorite": false,
+            "translations": {
+              "general.Favorite.Add": "Dodaj do ulubionych",
+              "general.Favorite.Delete": "Usuń z ulubionych"
+            }
+          },
+          "selected": false,
+          "watch": "Odtwarzaj",
+          "duration": 3180,
+          "signature": "",
+          "atdId": 4038,
+          "avaliable": null,
+          "movieType": false,
+          "jumpTime": null,
+          "lang": null,
+          "lesson": null,
+          "prices": null,
+          "showOutVod": false,
+          "isPremium": false,
+          "isSubscription": false
+        },
+        {
+          "title": "Porwać się na życie",
+          "subtitle": "Polska | 2017",
+          "showOnBox": {
+            "isCast": false,
+            "roleName": "Reżyseria",
+            "persons": [
+              "Michał Szcześniak"
+            ],
+            "castItems": null
+          },
+          "description": "Pięćdziesięcioletni życiowy nieudacznik i pechowiec, postanawia zdobyć się na odwagę i porwać koleżankę z pracy, aby uwolnić ją od prymitywnego męża i rozpocząć z nią nowe życie. Kiedy wywozi ją do pustego domu swojej ciotki, uświadamia sobie, czego w istocie dokonał. Przyjdzie im zmierzyć się  ze ścigającym ich mężem kobiety. Komedia w konwencji \"czeskiego\" humoru.",
+          "url": "/vod/teatroteka/porwac-sie-na-zycie",
+          "image": {
+            "url": "https://cms.35mm.online/media/12blmbpz/porwac_sie_na_zycie_001_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133886724548370000",
+            "title": null,
+            "redirect": null,
+            "author": "",
+            "alt": "Opis Obrazka"
+          },
+          "categoryImage": null,
+          "defaultIcon": null,
+          "type": "Asset",
+          "lead": "Pięćdziesięcioletni życiowy nieudacznik i pechowiec, postanawia zdobyć się na odwagę i porwać koleżankę z pracy, aby uwolnić ją od prymitywnego męża i rozpocząć z nią nowe życie. Kiedy wywozi ją do pustego domu swojej ciotki, uświadamia sobie, czego w istocie dokonał. Przyjdzie im zmierzyć się  ze ścigającym ich mężem kobiety. Komedia w konwencji \"czeskiego\" humoru.",
+          "favoriteModel": {
+            "url": "umbraco/api/favorites",
+            "id": 113258,
+            "isFavorite": false,
+            "translations": {
+              "general.Favorite.Add": "Dodaj do ulubionych",
+              "general.Favorite.Delete": "Usuń z ulubionych"
+            }
+          },
+          "selected": false,
+          "watch": "Odtwarzaj",
+          "duration": 3360,
+          "signature": "",
+          "atdId": 4044,
+          "avaliable": null,
+          "movieType": false,
+          "jumpTime": null,
+          "lang": null,
+          "lesson": null,
+          "prices": null,
+          "showOutVod": false,
+          "isPremium": false,
+          "isSubscription": false
+        },
+        {
+          "title": "Alicja w krainie koszmarów",
+          "subtitle": "Polska | 2018",
+          "showOnBox": {
+            "isCast": false,
+            "roleName": "Reżyseria",
+            "persons": [
+              "Piotr Domalewski"
+            ],
+            "castItems": null
+          },
+          "description": "Alicja to dziewczynka, która w drodze do szkoły została porwana. Przez ponad siedem lat była przetrzymywana przez swego oprawcę w piwnicy. Przez przypadek udaje jej się uciec i odzyskać wolność. Historia Alicji, już dojrzałej dziewczyny staje się łakomym kąskiem dla mass mediów.  Alicja wpada w ręce przedsiębiorczego agenta, sygnuje książkę opisującą jej dramat, jest bohaterką  reportaży w prasie i TV. Chłopak Alicji deklarując bezinteresowną przyjaźń, w istocie pragnie u jej boku zrobić medialną karierę. Alicja popada w depresję. Alicja ma świadomość, że w gruncie rzeczy najbliżsi zazdroszczą jej tragedii, która ją spotkała, bo ta uczyniła z niej bogatą i sławną osobę, co jest w otaczającym ją świecie wyznacznikiem szczęścia.",
+          "url": "/vod/teatroteka/alicja-w-krainie-koszmarow",
+          "image": {
+            "url": "https://cms.35mm.online/media/aysdhhzk/alicja_001_gallery.jpg?crop=0.1257095516569201,0.0000000000000001609438000748,0.12429044834307995,0&cropmode=percentage&width=2000&height=1500&rnd=133102271003970000",
+            "title": null,
+            "redirect": null,
+            "author": "",
+            "alt": "Opis Obrazka"
+          },
+          "categoryImage": null,
+          "defaultIcon": null,
+          "type": "Asset",
+          "lead": "Alicja to dziewczynka, która w drodze do szkoły została porwana. Przez ponad siedem lat była przetrzymywana przez swego oprawcę w piwnicy. Przez przypadek udaje jej się uciec i odzyskać wolność. Historia Alicji, już dojrzałej dziewczyny staje się łakomym kąskiem dla mass mediów.  Alicja wpada w ręce przedsiębiorczego agenta, sygnuje książkę opisującą jej dramat, jest bohaterką  reportaży w prasie i TV. Chłopak Alicji deklarując bezinteresowną przyjaźń, w istocie pragnie u jej boku zrobić medialną karierę. Alicja popada w depresję. Alicja ma świadomość, że w gruncie rzeczy najbliżsi zazdroszczą jej tragedii, która ją spotkała, bo ta uczyniła z niej bogatą i sławną osobę, co jest w otaczającym ją świecie wyznacznikiem szczęścia.",
+          "favoriteModel": {
+            "url": "umbraco/api/favorites",
+            "id": 113046,
+            "isFavorite": false,
+            "translations": {
+              "general.Favorite.Add": "Dodaj do ulubionych",
+              "general.Favorite.Delete": "Usuń z ulubionych"
+            }
+          },
+          "selected": false,
+          "watch": "Odtwarzaj",
+          "duration": 3300,
+          "signature": "",
+          "atdId": 4034,
+          "avaliable": null,
+          "movieType": false,
+          "jumpTime": null,
+          "lang": null,
+          "lesson": null,
+          "prices": null,
+          "showOutVod": false,
+          "isPremium": false,
+          "isSubscription": false
+        },
+        {
+          "title": "Wasza wysokość",
+          "subtitle": "Polska | 2015",
+          "showOnBox": {
+            "isCast": false,
+            "roleName": "Reżyseria",
+            "persons": [
+              "Agnieszka Smoczyńska"
+            ],
+            "castItems": null
+          },
+          "description": "Podczas wyprawy na Kanczendzongę ginie młody chłopak. Jego towarzyszka Wanda tłumaczy na konferencji prasowej, jak do tego doszło. Reżyser - dokumentalista, proponuje Wandzie powrót na Kanczendzongę – po ciało zaginionego alpinisty. Do wyprawy dołącza dziewczyna chłopaka Anna oraz jej ojciec Jerzy. Cała czwórka konfrontuje się z naturą i niełatwą przeszłością.",
+          "url": "/vod/teatroteka/wasza-wysokosc",
+          "image": {
+            "url": "https://cms.35mm.online/media/h3mh2ntj/wasza_wysokosc_001_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=133286140804300000",
+            "title": null,
+            "redirect": null,
+            "author": "",
+            "alt": "Opis Obrazka"
+          },
+          "categoryImage": null,
+          "defaultIcon": null,
+          "type": "Asset",
+          "lead": "Podczas wyprawy na Kanczendzongę ginie młody chłopak. Jego towarzyszka Wanda tłumaczy na konferencji prasowej, jak do tego doszło. Reżyser - dokumentalista, proponuje Wandzie powrót na Kanczendzongę – po ciało zaginionego alpinisty. Do wyprawy dołącza dziewczyna chłopaka Anna oraz jej ojciec Jerzy. Cała czwórka konfrontuje się z naturą i niełatwą przeszłością.",
+          "favoriteModel": {
+            "url": "umbraco/api/favorites",
+            "id": 113142,
+            "isFavorite": false,
+            "translations": {
+              "general.Favorite.Add": "Dodaj do ulubionych",
+              "general.Favorite.Delete": "Usuń z ulubionych"
+            }
+          },
+          "selected": false,
+          "watch": "Odtwarzaj",
+          "duration": 3120,
+          "signature": "",
+          "atdId": 4040,
+          "avaliable": null,
+          "movieType": false,
+          "jumpTime": null,
+          "lang": null,
+          "lesson": null,
+          "prices": null,
+          "showOutVod": false,
+          "isPremium": false,
+          "isSubscription": false
+        }
+      ],
+      "options": {
+        "rewind": false,
+        "pagination": false,
+        "type": "grid",
+        "autoplay": false,
+        "pauseOnHover": false,
+        "interval": 5000
+      },
+      "description": null,
+      "id": null,
+      "hideTitle": false
+    },
+    "reletedFromCategory": {
+      "type": null,
+      "header": null,
+      "headerUrl": null,
+      "items": null,
+      "options": {
+        "rewind": false,
+        "pagination": false,
+        "type": "slide",
+        "autoplay": false,
+        "pauseOnHover": false,
+        "interval": 5000
+      },
+      "description": null,
+      "id": null,
+      "hideTitle": false
+    },
+    "galeryOptions": {
+      "rewind": false,
+      "pagination": false,
+      "type": "slide",
+      "autoplay": false,
+      "pauseOnHover": false,
+      "interval": 5000
+    },
+    "accordions": [
+      {
+        "name": "TEATROTEKA",
+        "text": "<p>TEATROTEKA to realizowany od 2013 roku projekt Wytwórni Filmów Dokumentalnych i Fabularnych o charakterze artystycznym i edukacyjnym.</p>\n<p> </p>\n<p>Ideą projektu jest wykorzystanie potencjału technologii filmowej do ekranizacji najbardziej wartościowych osiągnięć „młodej” polskiej dramaturgii teatralnej.</p>\n<p> </p>\n<p>TEATROTEKA to nowy etap w myśleniu o ekranizacjach teatralnych, tak w kontekście artystycznym, jak i realizacyjnym. Ekranizacje tworzone przez młodych, często debiutujących reżyserów, przy wsparciu technologii i infrastruktury filmowej, pozwalają na realizację ciekawych, nowatorskich utworów.</p>\n<p> </p>\n<p>Sztuki współczesne, to teksty napisane często w formie „postdramatycznej”, odmienne w swej stylistyce i konwencji od klasycznego dramatu.</p>\n<p> </p>\n<p>W ciągu ostatnich lat zaistniało w Polsce nowe pokolenie autorów piszących dla teatru. Stworzyli oni swój oryginalny język, sposób obrazowania, formę, a także wzbogacili dramat współczesny o problematykę dotyczącą ludzi młodych i o ich sposób postrzegania otaczającej nas rzeczywistości. „Młoda” polska dramaturgia zasługuje na jej propagowanie, na zapoznanie z nią szerszego kręgu odbiorców – jest to główny cel edukacyjny projektu. TEATROTEKA to również przestrzeń dla reżyserów młodego i średniego pokolenia, którzy pomimo znaczącego niekiedy dorobku teatralnego i wykształcenia w tym kierunku, nie mieli dotąd możliwości stworzenia własnego i oryginalnego dzieła audiowizualnego. Projekt, realizowany z udziałem specjalistów planu filmowego skupionych wokół WFDiF, ma im to umożliwić.</p>\n<p> </p>\n<p>Ekranizacje Teatroteki odnoszą sukcesy na międzynarodowych festiwalach, m.in. na Międzynarodowym Festiwalu WORLDFEST w Houston, gdzie w ciągu ostatnich trzech lat produkcje TEATROTEKI zdobyły nagrody Gold, Silver i Platinum Remi. Wielkim sukcesem świadczącym o zupełnie nowej jakości, jaką Teatroteka wnosi we współczesne ekranizacje teatralne, jest nagroda Grand Prix Festiwalu Dwa Teatry 2015. Od 2017 roku odbywał się dedykowany festiwal Teatroteka FEST, który przedstawiał spektakle TEATROTEKI szerokiej widowni i nagradzał ich twórców.</p>\n<p> </p>\n<p>Aktualnie od 2023 roku premierowe pokazy TEATROTEK odbywają się podczas Koszalińskiego Festiwalu Debiutów Filmowych „Młodzi i Film”, gdzie przyznawane są trzy nagrody w następujących kategoriach: Jantar za reżyserię, Nagroda za zdjęcia i Nagroda za kreację aktorską.</p>\n<p> </p>\n<p>W latach 2013-2023 w ramach projektu TEATROTEKA powstało 68 oryginalnych produkcji.</p>\n<p> </p>\n<p>W 2019 roku Wytwórnia postanowiła rozszerzyć pole działania projektu o twórczość dramaturgiczną dla młodszych widzów. W ramach projektu TEATROTEKA MŁODEGO CZŁOWIEKA powstało dziesięć ekranizacji współczesnych sztuk dla dzieci i młodzieży.</p>\n<p> </p>\n<p>Cykl TEATROTEKA jest współfinansowany przez Ministerstwo Kultury i Dziedzictwa Narodowego.</p>",
+        "alias": "accordion",
+        "movies": null
+      }
+    ],
+    "audioDescription": false,
+    "honoreds": [
+      {
+        "label": "Produkcja",
+        "persons": [
+          "Wytwórnia Filmów Dokumentalnych i Fabularnych"
+        ]
+      },
+      {
+        "label": "Obsada",
+        "persons": [
+          "Adam Ferency",
+          "Krzysztof Globisz",
+          "Halina Łabonarska",
+          "Marta Król-Gajko",
+          "Łukasz Lewandowski"
+        ]
+      }
+    ],
+    "additionalMaterials": [],
+    "proFormViewModel": null,
+    "overlay": {
+      "url": "https://cms.35mm.online/media/cfunyurb/play-logo.png",
+      "title": null,
+      "redirect": null,
+      "author": "",
+      "alt": "Opis Obrazka"
+    },
+    "subjects": [],
+    "favoriteModel": {
+      "url": "umbraco/api/favorites",
+      "id": 113132,
+      "isFavorite": false,
+      "translations": {
+        "general.Favorite.Add": "Dodaj do ulubionych",
+        "general.Favorite.Delete": "Usuń z ulubionych"
+      }
+    },
+    "seasonsModel": {
+      "seasons": null,
+      "carouselOptions": {
+        "rewind": false,
+        "pagination": false,
+        "type": "slide",
+        "autoplay": false,
+        "pauseOnHover": false,
+        "interval": 0
+      },
+      "nextEpisodeUrl": null,
+      "previousEpisodeUrl": null
+    },
+    "signature": "",
+    "audioChannels": "",
+    "usedIn": "",
+    "soundSource": "",
+    "jumpTime": 10,
+    "distribution": [
+      "Wytwórnia Filmów Dokumentalnych i Fabularnych"
+    ],
+    "tags": null,
+    "proInfo": null,
+    "isSeries": false,
+    "lang": "pl",
+    "searchUrl": "/search",
+    "headerType": 0,
+    "isPackage": false,
+    "avaliableMovie": null,
+    "recordType": "Video",
+    "url": "/vod/teatroteka/walizka",
+    "isFonoteka": false,
+    "warning": [
+      {
+        "img": "https://cms.35mm.online/media/uq0cupkq/r-violence.svg",
+        "name": "Przemoc",
+        "value": "i - przemoc"
+      }
+    ],
+    "avaliable": null,
+    "aIhelpPage": {
+      "url": "/articles/o-ai",
+      "name": "O AI",
+      "label": null,
+      "requireAuthorization": false,
+      "target": null,
+      "alias": null
+    },
+    "showOutVod": false,
+    "showFavorite": true,
+    "price": null,
+    "features": null,
+    "listView": null,
+    "short": null,
+    "alias": "asset",
+    "accessibility": {
+      "requireAuthentication": false,
+      "allowedRoles": []
+    },
+    "translations": {
+      "navigation.GoTo.Player": "odtwarzacza",
+      "general.Favorite.Add": "Dodaj do ulubionych",
+      "moviePage.AdditionalMaterial": "Materiały dodatkowe",
+      "moviePage.Awords": "Nagrody",
+      "moviePage.Cast": "Obsada",
+      "moviePage.CastAndCredits": "Obsada i twórcy filmu",
+      "moviePage.Credits": "Twórcy filmu",
+      "general.Favorite.Delete": "Usuń z ulubionych",
+      "moviePage.Director": "Reżyser",
+      "carousel.First": "Przejdź do pierwszego",
+      "moviePage.Gallery": "Galeria",
+      "moviePage.Genre": "Gatunek",
+      "carousel.Last": "Przejdź do ostatniego",
+      "moviePage.LongDescription.Hide": "Krótszy opis",
+      "moviePage.LongDescription.Show": "Dłuższy opis",
+      "carousel.Min": "min.",
+      "carousel.Next": "Następny",
+      "carousel.PageX": "przejdź do strony %s",
+      "carousel.Pause": "Zatrzymaj autoodtwarzanie",
+      "moviePage.Picture": "Zdjęcia",
+      "carousel.Play": "Rozpocznij autoodtwarzanie",
+      "moviePage.Premier": "Premiera",
+      "carousel.Prev": "Poprzedni",
+      "moviePage.Related": "Podobne",
+      "moviePage.Recommended": "Redakcja poleca",
+      "general.Share": "Podziel się",
+      "carousel.SlideX": "Przejdź do %s",
+      "moviePage.Writers": "Scenariusz",
+      "moviePage.AviableSound": "Audio dostępne w językach",
+      "moviePage.AviableSubtitles": "Dostępne wersje napisów",
+      "moviePage.DurationTitle": "Czas trwania",
+      "moviePage.Deaf": "Dostępne napisy dla osób niesłyszących i słabosłyszących",
+      "moviePage.AudioDescription": "Dostępna audiodeskrypcja",
+      "general.ShowMore": "Pokaż więcej",
+      "general.ShowLess": "Pokaż mniej",
+      "moviePage.ProForm.SectionTitle": "Materiały PRO",
+      "moviePage.Subjects": "Tematy",
+      "moviePage.Subject.Title": "Tytuł tematu",
+      "moviePage.Subject.Start": "Start",
+      "moviePage.Subject.End": "Koniec",
+      "moviePage.Producer": "Producent",
+      "moviePage.UsedIn": "Wykorzystane w filmie",
+      "moviePage.Signature": "Sygnatura",
+      "moviePage.SoundSource": "Źródło nagrania",
+      "moviePage.Distributor": "Właściciel praw:",
+      "moviePage.Tags": "Tagi",
+      "moviePage.ProInfo.ColorCorrection": "Korekcja kolorów",
+      "moviePage.ProInfo.Color": "Kolor",
+      "moviePage.ProInfo.Distribution": "Dystrybucja",
+      "moviePage.ProInfo.Reconstruction": "Rekonstrukcja",
+      "moviePage.ProInfo.Resolution": "Rozdzielczość",
+      "moviePage.ProInfo.ScreenRation": "Proporcje ekranu",
+      "moviePage.ProInfo.Signature": "Sygnatura",
+      "moviePage.ProInfo": "informacje profesjonalne",
+      "moviePage.Adult.BodyLogin": "Aby go obejrzeć należy się zalogować.",
+      "moviePage.Adult.BodyConfirmAge": "Aby go obejrzeć należy się zalogować.",
+      "moviePage.Adult.ConfirmAge": "Mam 18 lat",
+      "moviePage.Adult.Header": "Materiał przeznaczony dla widzów dorosłych",
+      "moviePage.Adult.Remember": "Zapamiętaj",
+      "general.Login": "Zaloguj się",
+      "moviePage.Player.SomethingWrong": "Ups, coś poszło nie tak",
+      "moviePage.Player.ErrorMessage": "Napotkano nieznany błąd, spróbuj ponownie później.",
+      "moviePage.Player.GeoErrorMessage": "Materiał niedostępny w twojej lokalizacji.",
+      "general.Close": "Zamknij",
+      "general.Yes": "Tak",
+      "general.No": "Nie",
+      "moviePage.Player.Listen": "Słuchaj",
+      "moviePage.Player.Buy": "Wypożycz za",
+      "moviePage.Player.Confirm": "Potwierdź",
+      "moviePage.Player.Download": "Pobierz",
+      "moviePage.Player.ResumePlayback": "Wznów odtwarzanie",
+      "moviePage.Player.ResumePlaybackQuestion": "Czy chcesz wznowić odtwarzanie od",
+      "moviePage.Player.Trailer": "Zwiastun",
+      "moviePage.Player.Watch": "Odtwarzaj",
+      "moviePage.Player.WatchSlt": "Oglądaj SLT",
+      "moviePage.Player.PaymentAccessFor": "Dostęp na",
+      "moviePage.Player.PaymentDays": "dni",
+      "moviePage.Player.PaymentAggrementOobligatory": "Zgoda wymagana",
+      "moviePage.Player.PaymentOnlinePayment": "Jednorazowa płatność przelewem online",
+      "moviePage.Player.PaymentTestPayment": "Płatność testowa",
+      "carousel.Close": "Zamknij Galerię",
+      "general.OpenNewTab": "(otwiera w nowej karcie)",
+      "moviePage.Authors": "Twórcy",
+      "altText.GaleryTitle": "Galeria do filmu",
+      "general.Share.Email": "Udostępnij przez email",
+      "general.Share.Facebook": "Udostępnij w Facebook",
+      "general.ExpendImage": "(kliknięcie spowoduje wyświetlenie powiększonego obrazka)",
+      "moviePage.Player.Access": "Wypożyczasz",
+      "moviePage.Player.AddVoucher": "Dodaj kod rabatowy",
+      "moviePage.Player.PaymentMethods": "Metody płatności",
+      "moviePage.Player.PaymentMethodsTooMenyRequest": "Zbyt wiele żądań płatności",
+      "moviePage.Player.EnterCode": "Wprowadź kod tutaj",
+      "moviePage.Player.GoBack": "Wróć",
+      "moviePage.Player.PromotionNotExist": "Kod promocyjny jest niepoprawny",
+      "moviePage.Player.SendVoucher": "Zrealizuj",
+      "moviePage.Player.SubscriberNotExists": "Użytkownik nie istnieje",
+      "moviePage.ReletedPackage": "Inne pakiety",
+      "moviePage.PackageMovies": "Filmy w pakiecie",
+      "moviePage.MoviePage": "Strona filmu",
+      "moviePage.SearchInMovie": "Znalezione przez AI",
+      "general.New": "Nowość",
+      "moviePage.AgeCategory": "Kategoria wiekowa",
+      "moviePage.Emotion": "Zabarwienie emocjonalne",
+      "moviePage.HistoricalPeriod": "Epoka historyczna",
+      "moviePage.EventType": "Typ wydarzenia",
+      "moviePage.LengthType": "Metraż",
+      "moviePage.Technique": "Technika",
+      "moviePage.MusicalInstrument": "Instrumentarium",
+      "moviePage.MusicStyle": "Styl muzyczny",
+      "moviePage.Composer": "Kompozytor",
+      "moviePage.OntCategory": "Kategoria",
+      "moviePage.OntGenre": "Gatunek",
+      "searchPage.AdvSearchDecription": "Nowa wyszukiwarka 35mm.online z algorytmami sztucznej inteligencji. Wejdź w świat AI i szukaj swoich ulubionych aktorów, postaci filmowych, miejsc akcji, architektury czy charakterystycznych przedmiotów. Oglądaj całe filmy lub wybrane przez Ciebie sceny.",
+      "moviePage.PlaybackList": "Lista odtwarzania",
+      "searchPage.Sort": "Sortowanie",
+      "soundLibrary.AddToPlaylist": "Dodaj do playlisty",
+      "soundLibrary.DeleteFromPlaylist": "Usuń z playlisty",
+      "soundLibrary.DoLoop": "Zapętl",
+      "soundLibrary.LoopPlaylist": "Zapętl",
+      "soundLibrary.CreatePlaylist": "Utwórz Playlistę",
+      "soundLibrary.Add": "dodaj",
+      "moviePage.MoreFromCategory": "Więcej z kategorii",
+      "soundLibrary.DigitizationCaption": "Digitalizacja",
+      "moviePage.Player.PaymentAgreementObligatory": "(wymagana)",
+      "moviePage.Player.BrowserBundleContent": "Przeglądaj bibliotekę →",
+      "moviePage.Player.BrowserMovieContent": "Oglądaj film →",
+      "moviePage.Player.PaymentBundleBrowser": "Teraz możesz przeglądać bibliotekę {b}35mm.online!{/b}",
+      "moviePage.Player.PaymentConfirmation": "Potwierdzenie znajdziesz w swojej skrzynce e-mail",
+      "moviePage.Player.PaymentContactUs": "Jeśli błąd nadal występuje, poinformuj nas o tym",
+      "moviePage.Player.PaymentError": "{b}Najprawdopodobniej wystąpił błąd komunikacji lub{/b}{br}Użytkownik przerwał płatność",
+      "moviePage.Player.PaymentHappyBundleWatching": "Udanych seansów",
+      "moviePage.Player.PaymentTrialAccess": "Dostęp bezpłatny do {time}",
+      "moviePage.Player.PaymentTypeInformation": "Jedynym możliwym sposobem płatności za dostęp jest płatność elektroniczna za pośrednictwem systemu Autopay. Płatności należy dokonać w ciągu 15 minut od momentu złożenia zamówienia. Po tym czasie zamówienie zostanie anulowane.",
+      "moviePage.Player.PaymentVourcherSucceeded": "Kod rabatowy został zrealizowany",
+      "moviePage.Player.RetryPayment": "Spróbuj ponownie →",
+      "moviePage.Player.Single": "Dostęp jednorazowy na {time} godzin",
+      "moviePage.Player.SinglePaymentDescription": "Dostęp przez {time} godzin od momentu zakupu",
+      "moviePage.Player.Subscription": "Subskrypcja",
+      "moviePage.Player.SubscriptionPaymentDescription": "Dostęp do płatnych materiałów filmowych przez 30 dni. Subskrypcja odnawialna. Nie obejmuje kilkunastu filmów Premium.",
+      "moviePage.Player.VoucherCode": "Masz kod rabatowy?",
+      "moviePage.Production": "Produkcja",
+      "moviePage.Player.ADD_CARD": "+ DODAJ KARTĘ",
+      "moviePage.Player.COMMISSION_INFO": "(cena zawiera prowizję operatora płatności)",
+      "moviePage.Player.DELETE_CARD": "Usuń",
+      "moviePage.Player.EMPTY_CARD": "Brak dodanej karty",
+      "moviePage.Player.RATE_PER_MONTH": "{price} zł",
+      "moviePage.Player.SINGLE_PAYMENT_DESCRIPTION": "Dostęp przez {time} godzin od momentu zakupu",
+      "moviePage.Player.SUBSCRIPTION_PAYMENT_DESCRIPTION": "Dostęp do płatnych materiałów filmowych przez 30 dni. Subskrypcja automatycznie odnawialna. Nie obejmuje kilkunastu filmów Premium.",
+      "moviePage.Player.ENTIRE_LIBRARY_ACCESS": "A może dostęp do całego serwisu?",
+      "moviePage.Player.COMMISSION_TOTAL": "Razem",
+      "moviePage.Player.GEOLOCATION_INFO": "Ten materiał jest niedostępny w Twojej lokalizacji z powodu ograniczeń licencyjnych",
+      "moviePage.Player.ADD_CARD_ERROR": "Wystąpił błąd przy dodaniu karty, spróbuj jeszcze raz.",
+      "moviePage.ProInfo.Accordion": "Informacje profesjonalne",
+      "moviePage.AvailableMedia": "Dostępne Media",
+      "moviePage.Subtitles": "Napisy do filmów",
+      "moviePage.OutVOD": "Screener",
+      "moviePage.Player.BUY_SINGLE": "Wypożycz za",
+      "moviePage.Player.BUY_SUBSCRIPTION": "Subskrybuj za",
+      "moviePage.Player.SINGLE_PAYMENT_DURATION": "48H",
+      "moviePage.Player.SUBSCRIPTION_INFO": "Subskrybuj i oglądaj więcej ulubionych tytułów. Zrezygnuj w dowolnym momencie.",
+      "moviePage.Player.SUBSCRIPTION_PAYMENT_DURATION": "msc",
+      "moviePage.MoviesCount": "filmów",
+      "moviePage.PackageItemList": "Filmy dostępne w pakiecie. Również do wypożyczenia osobno",
+      "moviePage.Details": "Szczegóły pakiety"
+    }
+  }
+}

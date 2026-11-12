@@ -1,0 +1,730 @@
+{
+  "statusCode": 200,
+  "culture": "pl-pl",
+  "content": {
+    "loginUrl": "/login",
+    "showOnBox": {
+      "isCast": false,
+      "roleName": null,
+      "persons": null,
+      "castItems": null
+    },
+    "atdId": 0,
+    "image": {
+      "url": "https://cms.35mm.online/media/2azp01kz/reksio_reksio_malarz_09_gallery.jpg?crop=0.25538237186244772,0.11207936913497822,0.0047399676716565449,0.14804297039912609&cropmode=percentage&width=2000&height=1500&rnd=132761061514670000",
+      "title": null,
+      "redirect": null,
+      "author": "",
+      "alt": "Galeria"
+    },
+    "title": "Reksio",
+    "genre": [
+      "Serial animowany"
+    ],
+    "musicGenre": null,
+    "country": "Polska",
+    "year": "1976",
+    "duration": 0,
+    "categoryAge": {
+      "img": null,
+      "name": null,
+      "value": null
+    },
+    "quality": {
+      "img": null,
+      "name": null
+    },
+    "language": {
+      "sound": null,
+      "subtitle": null,
+      "audioDescription": false,
+      "deaf": false
+    },
+    "lead": "",
+    "storage": null,
+    "additionalInfo": null,
+    "storageNotes": null,
+    "description": "",
+    "cast": null,
+    "premier": null,
+    "images": [
+      {
+        "url": "https://cms.35mm.online/media/fdvflh0h/reksio_reksio_rozjemca_02_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754033417170000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/0ozg0njt/reksio_reksio_taternik_02_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754035522470000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/ocvbykdi/reksio_reksio_rozjemca_06_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754033432800000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/klwjstes/reksio_reksio_taternik_04_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754035528230000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/4coafbdh/reksio_reksio_taternik_06_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754035533870000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/uo5j5jci/reksio_reksio_strazak_08_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754034615570000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/t3ldpuum/reksio_reksio_strazak_10_gallery.jpg?crop=0.069264121889942562,0.10775994813193948,0.21514304238593074,0.17664721614393383&cropmode=percentage&width=2000&height=1500&rnd=132761071017030000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/vejlwjsp/reksio_reksio_taternik_09_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754035541700000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/eb1a2wgu/reksio_reksio_detektyw_02_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754006824370000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/5wth3kmg/reksio_reksio_medalista_02_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754027754300000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/aa5j1hsq/reksio_reksio_poliglota_02_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754030428230000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/ekvpirmi/reksio_reksio_pocieszyciel_10_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754029552900000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/vb3kd4vi/reksio_reksio_pogromca_10_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754030032300000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/3kzbytpb/reksio_reksio_zeglarz_10_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754037125230000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/bwlam1k1/reksio_reksio_kompozytor_11_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754026307630000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      },
+      {
+        "url": "https://cms.35mm.online/media/jnkbo1oz/reksio_reksio_malarz_11_gallery.jpg?anchor=center&mode=crop&width=2000&height=1500&rnd=132754027313130000",
+        "title": null,
+        "redirect": null,
+        "author": "",
+        "alt": "Galeria"
+      }
+    ],
+    "awords": [],
+    "reletedContent": {
+      "type": null,
+      "header": "Podobne",
+      "headerUrl": null,
+      "items": [
+        {
+          "title": "Pampalini",
+          "subtitle": "Polska | 1980",
+          "showOnBox": null,
+          "description": "",
+          "url": "/vod/dla-dzieci/pampalini",
+          "image": {
+            "url": "https://cms.35mm.online/media/wgplmsp2/pampalini_lowca_zwierzat_pampalini_i_tapir_13_gallery.jpg?crop=0.0674260239075055,0.0674260239075055,0.067426023907505336,0.067426023907505267&cropmode=percentage&width=2000&height=1500&rnd=132755742710000000",
+            "title": null,
+            "redirect": null,
+            "author": "",
+            "alt": "Opis Obrazka"
+          },
+          "categoryImage": null,
+          "defaultIcon": null,
+          "type": "Asset",
+          "lead": "",
+          "favoriteModel": {
+            "url": "umbraco/api/favorites",
+            "id": 51577,
+            "isFavorite": false,
+            "translations": {
+              "general.Favorite.Add": "Dodaj do ulubionych",
+              "general.Favorite.Delete": "Usuń z ulubionych"
+            }
+          },
+          "selected": false,
+          "watch": "Odtwarzaj",
+          "duration": 0,
+          "signature": null,
+          "atdId": 0,
+          "avaliable": null,
+          "movieType": false,
+          "jumpTime": null,
+          "lang": null,
+          "lesson": null,
+          "prices": null,
+          "showOutVod": false,
+          "isPremium": false,
+          "isSubscription": false
+        },
+        {
+          "title": "2 koty + 1 pies",
+          "subtitle": "Polska | 1993",
+          "showOnBox": null,
+          "description": "",
+          "url": "/vod/dla-dzieci/2-koty-1-pies",
+          "image": {
+            "url": "https://cms.35mm.online/media/t00pon3u/2_koty_1_pies_w_rekach_korsarzy_15_gallery.jpg?crop=0.14863469059121234,0.27364906832298136,0.14043938348286172,0.015425005751092739&cropmode=percentage&width=2000&height=1500&rnd=132755748369530000",
+            "title": null,
+            "redirect": null,
+            "author": "",
+            "alt": "Opis Obrazka"
+          },
+          "categoryImage": null,
+          "defaultIcon": null,
+          "type": "Asset",
+          "lead": "",
+          "favoriteModel": {
+            "url": "umbraco/api/favorites",
+            "id": 51588,
+            "isFavorite": false,
+            "translations": {
+              "general.Favorite.Add": "Dodaj do ulubionych",
+              "general.Favorite.Delete": "Usuń z ulubionych"
+            }
+          },
+          "selected": false,
+          "watch": "Odtwarzaj",
+          "duration": 0,
+          "signature": null,
+          "atdId": 0,
+          "avaliable": null,
+          "movieType": false,
+          "jumpTime": null,
+          "lang": null,
+          "lesson": null,
+          "prices": null,
+          "showOutVod": false,
+          "isPremium": false,
+          "isSubscription": false
+        },
+        {
+          "title": "Porwanie Baltazara Gąbki",
+          "subtitle": "Polska | 1970",
+          "showOnBox": null,
+          "description": "Serial dla dzieci zrealizowany w latach 1969-70 w Studiu Filmów Rysunkowych w Bielsku-Białej na podstawie popularnej powieści Stanisława Pagaczewskiego (1965). Książę Krak wysyła Smoka Wawelskiego i jego kucharza Bartłomieja na poszukiwanie zaginionego profesora Baltazara Gąbki. Ich śladem podąża tajemniczy Don Pedro - szpieg z Krainy Deszczowców. ",
+          "url": "/vod/dla-dzieci/porwanie-baltazara-gabki",
+          "image": {
+            "url": "https://cms.35mm.online/media/31vmq4ln/donpedro_02_gallery.jpg?crop=0.0015974440894569294,0.0015974440894569294,0,0&cropmode=percentage&width=2000&height=1500&rnd=132730073904470000",
+            "title": null,
+            "redirect": null,
+            "author": "",
+            "alt": "Opis Obrazka"
+          },
+          "categoryImage": null,
+          "defaultIcon": null,
+          "type": "Asset",
+          "lead": "Serial dla dzieci zrealizowany w latach 1969-70 w Studiu Filmów Rysunkowych w Bielsku-Białej na podstawie popularnej powieści Stanisława Pagaczewskiego (1965). Książę Krak wysyła Smoka Wawelskiego i jego kucharza Bartłomieja na poszukiwanie zaginionego profesora Baltazara Gąbki. Ich śladem podąża tajemniczy Don Pedro - szpieg z Krainy Deszczowców. ",
+          "favoriteModel": {
+            "url": "umbraco/api/favorites",
+            "id": 51586,
+            "isFavorite": false,
+            "translations": {
+              "general.Favorite.Add": "Dodaj do ulubionych",
+              "general.Favorite.Delete": "Usuń z ulubionych"
+            }
+          },
+          "selected": false,
+          "watch": "Odtwarzaj",
+          "duration": 0,
+          "signature": null,
+          "atdId": 0,
+          "avaliable": null,
+          "movieType": false,
+          "jumpTime": null,
+          "lang": null,
+          "lesson": null,
+          "prices": null,
+          "showOutVod": false,
+          "isPremium": false,
+          "isSubscription": false
+        }
+      ],
+      "options": {
+        "rewind": false,
+        "pagination": false,
+        "type": "grid",
+        "autoplay": false,
+        "pauseOnHover": false,
+        "interval": 5000
+      },
+      "description": null,
+      "id": null,
+      "hideTitle": false
+    },
+    "reletedFromCategory": {
+      "type": null,
+      "header": null,
+      "headerUrl": null,
+      "items": null,
+      "options": {
+        "rewind": false,
+        "pagination": false,
+        "type": "slide",
+        "autoplay": false,
+        "pauseOnHover": false,
+        "interval": 5000
+      },
+      "description": null,
+      "id": null,
+      "hideTitle": false
+    },
+    "galeryOptions": {
+      "rewind": false,
+      "pagination": false,
+      "type": "slide",
+      "autoplay": false,
+      "pauseOnHover": false,
+      "interval": 5000
+    },
+    "accordions": [
+      {
+        "name": "Rekonstrukcja",
+        "text": "Film poddany rekonstrukcji cyfrowej w ramach projektu: Cyfrowa rekonstrukcja i digitalizacja polskich filmów fabularnych, dokumentalnych i animowanych w celu zapewnienia dostępu na wszystkich polach dystrybucji (kino, telewizja, Internet, urządzenia mobilne) oraz zachowania dla przyszłych pokoleń polskiego dziedzictwa filmowego (POPC.02.03.02-00-0007/17). Całkowita wartość projektu wynosi 109 969 779,89 zł, wartość dofinansowania Unii Europejskiej 78 336 345,68 zł. Projekt realizowany przez Polski Instytut Sztuki Filmowej (Lider), Wytwórnię Filmów Dokumentalnych i Fabularnych w Warszawie oraz Studio Filmów Rysunkowych w Bielsku-Białej (Partnerzy), współfinansowany ze środków Europejskiego Funduszu Rozwoju Regionalnego. Projekt jest również dofinansowany ze środków Ministra Kultury, Dziedzictwa Narodowego i Sportu w kwocie 14 226 983,73 zł.",
+        "alias": "accordion",
+        "movies": null
+      }
+    ],
+    "audioDescription": false,
+    "honoreds": [],
+    "additionalMaterials": [],
+    "proFormViewModel": null,
+    "overlay": {
+      "url": "https://cms.35mm.online/media/cfunyurb/play-logo.png",
+      "title": null,
+      "redirect": null,
+      "author": "",
+      "alt": "Opis Obrazka"
+    },
+    "subjects": [],
+    "favoriteModel": {
+      "url": "umbraco/api/favorites",
+      "id": 51579,
+      "isFavorite": false,
+      "translations": {
+        "general.Favorite.Add": "Dodaj do ulubionych",
+        "general.Favorite.Delete": "Usuń z ulubionych"
+      }
+    },
+    "seasonsModel": {
+      "seasons": [
+        {
+          "title": "Reksio",
+          "episodes": [
+            {
+              "title": "Reksio: Reksio dentysta",
+              "subtitle": "Polska | 1976",
+              "showOnBox": {
+                "isCast": false,
+                "roleName": "Reżyseria",
+                "persons": [
+                  "Józef Ćwiertnia"
+                ],
+                "castItems": null
+              },
+              "description": "Reksio chce się bawić, ale chłopca boli ząb. Piesek proponuje rwanie obcęgami, rwanie sznurkiem przywiązanym do kości, do trzepaka i do auta, aż trafiają do gabinetu dentysty. Ten przy okazji sprawdza zęby psa – bez zarzutu!",
+              "url": "/vod/dla-dzieci/reksio/reksio/reksio-reksio-dentysta",
+              "image": {
+                "url": "https://cms.35mm.online/media/wkvajcm0/reksio_reksio_dentysta_04_gallery.jpg",
+                "title": null,
+                "redirect": null,
+                "author": "",
+                "alt": "Opis Obrazka"
+              },
+              "categoryImage": null,
+              "defaultIcon": null,
+              "type": "Asset",
+              "lead": "Reksio chce się bawić, ale chłopca boli ząb. Piesek proponuje rwanie obcęgami, rwanie sznurkiem przywiązanym do kości, do trzepaka i do auta, aż trafiają do gabinetu dentysty. Ten przy okazji sprawdza zęby psa – bez zarzutu!",
+              "favoriteModel": {
+                "url": "umbraco/api/favorites",
+                "id": 42712,
+                "isFavorite": false,
+                "translations": {
+                  "general.Favorite.Add": "Dodaj do ulubionych",
+                  "general.Favorite.Delete": "Usuń z ulubionych"
+                }
+              },
+              "selected": false,
+              "watch": "Odtwarzaj",
+              "duration": 540,
+              "signature": "",
+              "atdId": 2918,
+              "avaliable": null,
+              "movieType": false,
+              "jumpTime": null,
+              "lang": null,
+              "lesson": null,
+              "prices": null,
+              "showOutVod": false,
+              "isPremium": false,
+              "isSubscription": false
+            },
+            {
+              "title": "Reksio i ptaki: Reksio i sowa",
+              "subtitle": "Polska | 1990",
+              "showOnBox": {
+                "isCast": false,
+                "roleName": "Reżyseria",
+                "persons": [
+                  "Andrzej Fletner"
+                ],
+                "castItems": null
+              },
+              "description": "Na podwórku wszystko się psuje, a opiekun pokazuje zwierzętom figę z makiem. Reksio próbuje naprawić poidło dla kur i drzwiczki do kurnika – wszystko na marne. Zrezygnowany opuszcza podwórko. Zawraca go sowa, która koi nerwy muzyką.",
+              "url": "/vod/dla-dzieci/reksio/reksio/reksio-i-ptaki-reksio-i-sowa",
+              "image": {
+                "url": "https://cms.35mm.online/media/yyxjvcz3/reksio_i_ptaki_reksio_i_sowa_15_gallery.jpg",
+                "title": null,
+                "redirect": null,
+                "author": "",
+                "alt": "Opis Obrazka"
+              },
+              "categoryImage": null,
+              "defaultIcon": null,
+              "type": "Asset",
+              "lead": "Na podwórku wszystko się psuje, a opiekun pokazuje zwierzętom figę z makiem. Reksio próbuje naprawić poidło dla kur i drzwiczki do kurnika – wszystko na marne. Zrezygnowany opuszcza podwórko. Zawraca go sowa, która koi nerwy muzyką.",
+              "favoriteModel": {
+                "url": "umbraco/api/favorites",
+                "id": 49756,
+                "isFavorite": false,
+                "translations": {
+                  "general.Favorite.Add": "Dodaj do ulubionych",
+                  "general.Favorite.Delete": "Usuń z ulubionych"
+                }
+              },
+              "selected": false,
+              "watch": "Odtwarzaj",
+              "duration": 540,
+              "signature": "",
+              "atdId": 3380,
+              "avaliable": null,
+              "movieType": false,
+              "jumpTime": null,
+              "lang": null,
+              "lesson": null,
+              "prices": null,
+              "showOutVod": false,
+              "isPremium": false,
+              "isSubscription": false
+            },
+            {
+              "title": "Reksio i ptaki: Reksio i pelikan",
+              "subtitle": "Polska | 1990",
+              "showOnBox": {
+                "isCast": false,
+                "roleName": "Reżyseria",
+                "persons": [
+                  "Andrzej Fletner"
+                ],
+                "castItems": null
+              },
+              "description": "Rybak wyrzuca na podwórko złapanego w sieci pelikana. Zwierzęta kpią z ptaka, którego uważają za niezdarę. Reksio pomaga pelikanowi wzbić się w powietrze ze zbudowanej przez siebie wyrzutni. Pelikan w locie oszałamia zwierzęta.",
+              "url": "/vod/dla-dzieci/reksio/reksio/reksio-i-ptaki-reksio-i-pelikan",
+              "image": {
+                "url": "https://cms.35mm.online/media/2pnogip1/reksio_i_ptaki_reksio_i_pelikan_14_gallery.jpg",
+                "title": null,
+                "redirect": null,
+                "author": "",
+                "alt": "Opis Obrazka"
+              },
+              "categoryImage": null,
+              "defaultIcon": null,
+              "type": "Asset",
+              "lead": "Rybak wyrzuca na podwórko złapanego w sieci pelikana. Zwierzęta kpią z ptaka, którego uważają za niezdarę. Reksio pomaga pelikanowi wzbić się w powietrze ze zbudowanej przez siebie wyrzutni. Pelikan w locie oszałamia zwierzęta.",
+              "favoriteModel": {
+                "url": "umbraco/api/favorites",
+                "id": 49695,
+                "isFavorite": false,
+                "translations": {
+                  "general.Favorite.Add": "Dodaj do ulubionych",
+                  "general.Favorite.Delete": "Usuń z ulubionych"
+                }
+              },
+              "selected": false,
+              "watch": "Odtwarzaj",
+              "duration": 540,
+              "signature": "",
+              "atdId": 3399,
+              "avaliable": null,
+              "movieType": false,
+              "jumpTime": null,
+              "lang": null,
+              "lesson": null,
+              "prices": null,
+              "showOutVod": false,
+              "isPremium": false,
+              "isSubscription": false
+            }
+          ]
+        }
+      ],
+      "carouselOptions": {
+        "rewind": false,
+        "pagination": false,
+        "type": "slide",
+        "autoplay": false,
+        "pauseOnHover": false,
+        "interval": 0
+      },
+      "nextEpisodeUrl": "/vod/dla-dzieci/reksio/reksio/reksio-reksio-dentysta",
+      "previousEpisodeUrl": null
+    },
+    "signature": "",
+    "audioChannels": "",
+    "usedIn": "",
+    "soundSource": "",
+    "jumpTime": 10,
+    "distribution": [
+      "Studio Filmów Rysunkowych (Bielsko-Biała)"
+    ],
+    "tags": null,
+    "proInfo": null,
+    "isSeries": true,
+    "lang": "pl",
+    "searchUrl": "/search",
+    "headerType": 1,
+    "isPackage": false,
+    "avaliableMovie": null,
+    "recordType": "Video",
+    "url": "/vod/dla-dzieci/reksio",
+    "isFonoteka": false,
+    "warning": null,
+    "avaliable": null,
+    "aIhelpPage": {
+      "url": "/articles/o-ai",
+      "name": "O AI",
+      "label": null,
+      "requireAuthorization": false,
+      "target": null,
+      "alias": null
+    },
+    "showOutVod": false,
+    "showFavorite": true,
+    "price": null,
+    "features": null,
+    "listView": null,
+    "short": null,
+    "alias": "series",
+    "accessibility": {
+      "requireAuthentication": false,
+      "allowedRoles": []
+    },
+    "translations": {
+      "navigation.GoTo.Player": "odtwarzacza",
+      "general.Favorite.Add": "Dodaj do ulubionych",
+      "moviePage.AdditionalMaterial": "Materiały dodatkowe",
+      "moviePage.Awords": "Nagrody",
+      "moviePage.Cast": "Obsada",
+      "moviePage.CastAndCredits": "Obsada i twórcy filmu",
+      "moviePage.Credits": "Twórcy filmu",
+      "general.Favorite.Delete": "Usuń z ulubionych",
+      "moviePage.Director": "Reżyser",
+      "carousel.First": "Przejdź do pierwszego",
+      "moviePage.Gallery": "Galeria",
+      "moviePage.Genre": "Gatunek",
+      "carousel.Last": "Przejdź do ostatniego",
+      "moviePage.LongDescription.Hide": "Krótszy opis",
+      "moviePage.LongDescription.Show": "Dłuższy opis",
+      "carousel.Min": "min.",
+      "carousel.Next": "Następny",
+      "carousel.PageX": "przejdź do strony %s",
+      "carousel.Pause": "Zatrzymaj autoodtwarzanie",
+      "moviePage.Picture": "Zdjęcia",
+      "carousel.Play": "Rozpocznij autoodtwarzanie",
+      "moviePage.Premier": "Premiera",
+      "carousel.Prev": "Poprzedni",
+      "moviePage.Related": "Podobne",
+      "moviePage.Recommended": "Redakcja poleca",
+      "general.Share": "Podziel się",
+      "carousel.SlideX": "Przejdź do %s",
+      "moviePage.Writers": "Scenariusz",
+      "moviePage.AviableSound": "Audio dostępne w językach",
+      "moviePage.AviableSubtitles": "Dostępne wersje napisów",
+      "moviePage.DurationTitle": "Czas trwania",
+      "moviePage.Deaf": "Dostępne napisy dla osób niesłyszących i słabosłyszących",
+      "moviePage.AudioDescription": "Dostępna audiodeskrypcja",
+      "general.ShowMore": "Pokaż więcej",
+      "general.ShowLess": "Pokaż mniej",
+      "moviePage.ProForm.SectionTitle": "Materiały PRO",
+      "moviePage.Subjects": "Tematy",
+      "moviePage.Subject.Title": "Tytuł tematu",
+      "moviePage.Subject.Start": "Start",
+      "moviePage.Subject.End": "Koniec",
+      "moviePage.Producer": "Producent",
+      "moviePage.UsedIn": "Wykorzystane w filmie",
+      "moviePage.Signature": "Sygnatura",
+      "moviePage.SoundSource": "Źródło nagrania",
+      "moviePage.Distributor": "Właściciel praw:",
+      "moviePage.Tags": "Tagi",
+      "moviePage.ProInfo.ColorCorrection": "Korekcja kolorów",
+      "moviePage.ProInfo.Color": "Kolor",
+      "moviePage.ProInfo.Distribution": "Dystrybucja",
+      "moviePage.ProInfo.Reconstruction": "Rekonstrukcja",
+      "moviePage.ProInfo.Resolution": "Rozdzielczość",
+      "moviePage.ProInfo.ScreenRation": "Proporcje ekranu",
+      "moviePage.ProInfo.Signature": "Sygnatura",
+      "moviePage.ProInfo": "informacje profesjonalne",
+      "moviePage.Adult.BodyLogin": "Aby go obejrzeć należy się zalogować.",
+      "moviePage.Adult.BodyConfirmAge": "Aby go obejrzeć należy się zalogować.",
+      "moviePage.Adult.ConfirmAge": "Mam 18 lat",
+      "moviePage.Adult.Header": "Materiał przeznaczony dla widzów dorosłych",
+      "moviePage.Adult.Remember": "Zapamiętaj",
+      "general.Login": "Zaloguj się",
+      "moviePage.Player.SomethingWrong": "Ups, coś poszło nie tak",
+      "moviePage.Player.ErrorMessage": "Napotkano nieznany błąd, spróbuj ponownie później.",
+      "moviePage.Player.GeoErrorMessage": "Materiał niedostępny w twojej lokalizacji.",
+      "general.Close": "Zamknij",
+      "general.Yes": "Tak",
+      "general.No": "Nie",
+      "moviePage.Player.Listen": "Słuchaj",
+      "moviePage.Player.Buy": "Wypożycz za",
+      "moviePage.Player.Confirm": "Potwierdź",
+      "moviePage.Player.Download": "Pobierz",
+      "moviePage.Player.ResumePlayback": "Wznów odtwarzanie",
+      "moviePage.Player.ResumePlaybackQuestion": "Czy chcesz wznowić odtwarzanie od",
+      "moviePage.Player.Trailer": "Zwiastun",
+      "moviePage.Player.Watch": "Odtwarzaj",
+      "moviePage.Player.WatchSlt": "Oglądaj SLT",
+      "moviePage.Player.PaymentAccessFor": "Dostęp na",
+      "moviePage.Player.PaymentDays": "dni",
+      "moviePage.Player.PaymentAggrementOobligatory": "Zgoda wymagana",
+      "moviePage.Player.PaymentOnlinePayment": "Jednorazowa płatność przelewem online",
+      "moviePage.Player.PaymentTestPayment": "Płatność testowa",
+      "carousel.Close": "Zamknij Galerię",
+      "general.OpenNewTab": "(otwiera w nowej karcie)",
+      "moviePage.Authors": "Twórcy",
+      "altText.GaleryTitle": "Galeria do filmu",
+      "general.Share.Email": "Udostępnij przez email",
+      "general.Share.Facebook": "Udostępnij w Facebook",
+      "general.ExpendImage": "(kliknięcie spowoduje wyświetlenie powiększonego obrazka)",
+      "moviePage.Player.Access": "Wypożyczasz",
+      "moviePage.Player.AddVoucher": "Dodaj kod rabatowy",
+      "moviePage.Player.PaymentMethods": "Metody płatności",
+      "moviePage.Player.PaymentMethodsTooMenyRequest": "Zbyt wiele żądań płatności",
+      "moviePage.Player.EnterCode": "Wprowadź kod tutaj",
+      "moviePage.Player.GoBack": "Wróć",
+      "moviePage.Player.PromotionNotExist": "Kod promocyjny jest niepoprawny",
+      "moviePage.Player.SendVoucher": "Zrealizuj",
+      "moviePage.Player.SubscriberNotExists": "Użytkownik nie istnieje",
+      "moviePage.ReletedPackage": "Inne pakiety",
+      "moviePage.PackageMovies": "Filmy w pakiecie",
+      "moviePage.MoviePage": "Strona filmu",
+      "moviePage.SearchInMovie": "Znalezione przez AI",
+      "general.New": "Nowość",
+      "moviePage.AgeCategory": "Kategoria wiekowa",
+      "moviePage.Emotion": "Zabarwienie emocjonalne",
+      "moviePage.HistoricalPeriod": "Epoka historyczna",
+      "moviePage.EventType": "Typ wydarzenia",
+      "moviePage.LengthType": "Metraż",
+      "moviePage.Technique": "Technika",
+      "moviePage.MusicalInstrument": "Instrumentarium",
+      "moviePage.MusicStyle": "Styl muzyczny",
+      "moviePage.Composer": "Kompozytor",
+      "moviePage.OntCategory": "Kategoria",
+      "moviePage.OntGenre": "Gatunek",
+      "searchPage.AdvSearchDecription": "Nowa wyszukiwarka 35mm.online z algorytmami sztucznej inteligencji. Wejdź w świat AI i szukaj swoich ulubionych aktorów, postaci filmowych, miejsc akcji, architektury czy charakterystycznych przedmiotów. Oglądaj całe filmy lub wybrane przez Ciebie sceny.",
+      "moviePage.PlaybackList": "Lista odtwarzania",
+      "searchPage.Sort": "Sortowanie",
+      "soundLibrary.AddToPlaylist": "Dodaj do playlisty",
+      "soundLibrary.DeleteFromPlaylist": "Usuń z playlisty",
+      "soundLibrary.DoLoop": "Zapętl",
+      "soundLibrary.LoopPlaylist": "Zapętl",
+      "soundLibrary.CreatePlaylist": "Utwórz Playlistę",
+      "soundLibrary.Add": "dodaj",
+      "moviePage.MoreFromCategory": "Więcej z kategorii",
+      "soundLibrary.DigitizationCaption": "Digitalizacja",
+      "moviePage.Player.PaymentAgreementObligatory": "(wymagana)",
+      "moviePage.Player.BrowserBundleContent": "Przeglądaj bibliotekę →",
+      "moviePage.Player.BrowserMovieContent": "Oglądaj film →",
+      "moviePage.Player.PaymentBundleBrowser": "Teraz możesz przeglądać bibliotekę {b}35mm.online!{/b}",
+      "moviePage.Player.PaymentConfirmation": "Potwierdzenie znajdziesz w swojej skrzynce e-mail",
+      "moviePage.Player.PaymentContactUs": "Jeśli błąd nadal występuje, poinformuj nas o tym",
+      "moviePage.Player.PaymentError": "{b}Najprawdopodobniej wystąpił błąd komunikacji lub{/b}{br}Użytkownik przerwał płatność",
+      "moviePage.Player.PaymentHappyBundleWatching": "Udanych seansów",
+      "moviePage.Player.PaymentTrialAccess": "Dostęp bezpłatny do {time}",
+      "moviePage.Player.PaymentTypeInformation": "Jedynym możliwym sposobem płatności za dostęp jest płatność elektroniczna za pośrednictwem systemu Autopay. Płatności należy dokonać w ciągu 15 minut od momentu złożenia zamówienia. Po tym czasie zamówienie zostanie anulowane.",
+      "moviePage.Player.PaymentVourcherSucceeded": "Kod rabatowy został zrealizowany",
+      "moviePage.Player.RetryPayment": "Spróbuj ponownie →",
+      "moviePage.Player.Single": "Dostęp jednorazowy na {time} godzin",
+      "moviePage.Player.SinglePaymentDescription": "Dostęp przez {time} godzin od momentu zakupu",
+      "moviePage.Player.Subscription": "Subskrypcja",
+      "moviePage.Player.SubscriptionPaymentDescription": "Dostęp do płatnych materiałów filmowych przez 30 dni. Subskrypcja odnawialna. Nie obejmuje kilkunastu filmów Premium.",
+      "moviePage.Player.VoucherCode": "Masz kod rabatowy?",
+      "moviePage.Production": "Produkcja",
+      "moviePage.Player.ADD_CARD": "+ DODAJ KARTĘ",
+      "moviePage.Player.COMMISSION_INFO": "(cena zawiera prowizję operatora płatności)",
+      "moviePage.Player.DELETE_CARD": "Usuń",
+      "moviePage.Player.EMPTY_CARD": "Brak dodanej karty",
+      "moviePage.Player.RATE_PER_MONTH": "{price} zł",
+      "moviePage.Player.SINGLE_PAYMENT_DESCRIPTION": "Dostęp przez {time} godzin od momentu zakupu",
+      "moviePage.Player.SUBSCRIPTION_PAYMENT_DESCRIPTION": "Dostęp do płatnych materiałów filmowych przez 30 dni. Subskrypcja automatycznie odnawialna. Nie obejmuje kilkunastu filmów Premium.",
+      "moviePage.Player.ENTIRE_LIBRARY_ACCESS": "A może dostęp do całego serwisu?",
+      "moviePage.Player.COMMISSION_TOTAL": "Razem",
+      "moviePage.Player.GEOLOCATION_INFO": "Ten materiał jest niedostępny w Twojej lokalizacji z powodu ograniczeń licencyjnych",
+      "moviePage.Player.ADD_CARD_ERROR": "Wystąpił błąd przy dodaniu karty, spróbuj jeszcze raz.",
+      "moviePage.ProInfo.Accordion": "Informacje profesjonalne",
+      "moviePage.AvailableMedia": "Dostępne Media",
+      "moviePage.Subtitles": "Napisy do filmów",
+      "moviePage.OutVOD": "Screener",
+      "moviePage.Player.BUY_SINGLE": "Wypożycz za",
+      "moviePage.Player.BUY_SUBSCRIPTION": "Subskrybuj za",
+      "moviePage.Player.SINGLE_PAYMENT_DURATION": "48H",
+      "moviePage.Player.SUBSCRIPTION_INFO": "Subskrybuj i oglądaj więcej ulubionych tytułów. Zrezygnuj w dowolnym momencie.",
+      "moviePage.Player.SUBSCRIPTION_PAYMENT_DURATION": "msc",
+      "moviePage.MoviesCount": "filmów",
+      "moviePage.PackageItemList": "Filmy dostępne w pakiecie. Również do wypożyczenia osobno",
+      "moviePage.Details": "Szczegóły pakiety"
+    }
+  }
+}

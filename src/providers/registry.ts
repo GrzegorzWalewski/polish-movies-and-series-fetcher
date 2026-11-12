@@ -15,6 +15,7 @@ import { telekino } from './telekino.js';
 import { vider } from './vider.js';
 import { iitv } from './iitv.js';
 import { dokumentalne } from './dokumentalne.js';
+import { mm35 } from './mm35.js';
 
 /** All enabled providers. Later batches add entries here. */
 export const providers: Provider[] = [
@@ -34,4 +35,5 @@ export const providers: Provider[] = [
   vider,
   iitv,
   dokumentalne,
+  mm35,
 ];
