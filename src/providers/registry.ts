@@ -6,6 +6,7 @@ import { cda } from './cda.js';
 import { filman } from './filman.js';
 import { bajeczki24 } from './bajeczki24.js';
 import { premiumsmart } from './premiumsmart.js';
+import { serialeVip } from './seriale-vip.js';
 
 /** All enabled providers. Later batches add entries here. */
 export const providers: Provider[] = [
@@ -16,4 +17,5 @@ export const providers: Provider[] = [
   filman,
   bajeczki24,
   premiumsmart,
+  serialeVip,
 ];
