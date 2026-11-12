@@ -4,6 +4,7 @@ import * as p from '@clack/prompts';
 import {
   searchTmdbCandidates,
   resolveMediaDetails,
+  resolveAbsoluteEpisode,
   TmdbAuthError,
   type TmdbSearchCandidate,
 } from './tmdb.js';
@@ -92,6 +93,21 @@ program
         }
       }
 
+      // Some sites (telekino.top) number episodes continuously across
+      // seasons — resolve the absolute episode number from TMDB
+      let absoluteEpisode: number | undefined;
+      if (season && episode) {
+        if (season === 1) {
+          absoluteEpisode = episode;
+        } else {
+          s.start('Resolving absolute episode number...');
+          absoluteEpisode =
+            (await resolveAbsoluteEpisode(media.tmdbId, season, episode)) ??
+            episode;
+          s.stop();
+        }
+      }
+
       p.log.step(
         `Checking ${providers.length} providers (${providers.map((x) => x.name).join(', ')})...`
       );
@@ -109,6 +125,7 @@ program
                 year: media.year,
                 season,
                 episode,
+                absoluteEpisode,
               }),
             // filman's token endpoint has a ~1-2min rate-limit cooldown that
             // the provider waits out — give it room

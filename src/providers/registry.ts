@@ -11,6 +11,7 @@ import { maxvod } from './maxvod.js';
 import { virpe } from './virpe.js';
 import { freedisc } from './freedisc.js';
 import { cdaHd } from './cda-hd.js';
+import { telekino } from './telekino.js';
 
 /** All enabled providers. Later batches add entries here. */
 export const providers: Provider[] = [
@@ -26,4 +27,5 @@ export const providers: Provider[] = [
   virpe,
   freedisc,
   cdaHd,
+  telekino,
 ];

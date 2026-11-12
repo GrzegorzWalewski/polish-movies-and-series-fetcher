@@ -82,6 +82,33 @@ export async function searchTmdbCandidates(
     }));
 }
 
+/**
+ * Sites that number episodes continuously across seasons (no per-season
+ * reset) need the absolute episode number: sum of prior seasons' episode
+ * counts + episode.
+ */
+export async function resolveAbsoluteEpisode(
+  tmdbId: number,
+  season: number,
+  episode: number
+): Promise<number | null> {
+  try {
+    const url = `${TMDB_BASE}/tv/${tmdbId}?language=pl-PL`;
+    const data = (await fetch(url, { headers: headers() }).then((r) =>
+      r.json()
+    )) as {
+      seasons?: { season_number: number; episode_count: number }[];
+    };
+    if (!Array.isArray(data.seasons)) return null;
+    const prior = data.seasons
+      .filter((s) => s.season_number >= 1 && s.season_number < season)
+      .reduce((sum, s) => sum + s.episode_count, 0);
+    return prior + episode;
+  } catch {
+    return null;
+  }
+}
+
 /** Fetch details + external_ids for the chosen candidate → MediaResult. */
 export async function resolveMediaDetails(
   candidate: TmdbSearchCandidate

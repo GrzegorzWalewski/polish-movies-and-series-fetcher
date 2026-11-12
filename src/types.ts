@@ -29,6 +29,8 @@ export interface ProviderSearchParams {
   year: string;
   season?: number;
   episode?: number;
+  /** season+episode flattened to the show's absolute episode number (TMDB) */
+  absoluteEpisode?: number;
 }
 
 export interface Provider {
