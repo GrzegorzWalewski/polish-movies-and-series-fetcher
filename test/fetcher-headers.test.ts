@@ -4,6 +4,7 @@ import {
   isCloudflareChallenge,
   providerOwnsIdentity,
   buildRequestHeaders,
+  mergeCookieHeaders,
 } from '../src/utils/fetcher.js';
 import { CloudflareBlockedError } from '../src/types.js';
 
@@ -57,6 +58,24 @@ describe('buildRequestHeaders', () => {
     );
     expect(h.Cookie).toBe('cf_clearance=solved; PHPSESSID=s1; BKD_REMEMBER=r1');
     expect(h['User-Agent']).toContain('Chrome/152');
+  });
+
+  it('provider cookies override same-named solver cookies (PHP reads first occurrence)', () => {
+    const h = buildRequestHeaders(
+      { cookie: 'PHPSESSID=user_session; user_id=42' },
+      { ...solvedCtx, cookieHeader: 'cf_clearance=solved; PHPSESSID=anonymous_solver' }
+    );
+    expect(h.Cookie).toBe(
+      'cf_clearance=solved; PHPSESSID=user_session; user_id=42'
+    );
+  });
+
+  it('mergeCookieHeaders handles missing/empty parts and junk entries', () => {
+    expect(mergeCookieHeaders(undefined, 'a=1')).toBe('a=1');
+    expect(mergeCookieHeaders('a=1', undefined)).toBe('a=1');
+    expect(mergeCookieHeaders(undefined, undefined)).toBeUndefined();
+    expect(mergeCookieHeaders('junk', 'a=1')).toBe('a=1');
+    expect(mergeCookieHeaders('a=1; b=2', 'b=3')).toBe('a=1; b=3');
   });
 
   it('sends provider cookies unchanged when no context', () => {

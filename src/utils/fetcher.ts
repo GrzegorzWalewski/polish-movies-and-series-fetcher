@@ -53,6 +53,28 @@ export function providerOwnsIdentity(opts: FetchOptions): boolean {
 }
 
 /**
+ * Merge two Cookie header values by name; later entries win (provider
+ * session cookies override the solver's anonymous ones, e.g. PHPSESSID —
+ * servers read the first occurrence of a duplicate name).
+ * Pure — exported for tests.
+ */
+export function mergeCookieHeaders(
+  solved?: string,
+  own?: string
+): string | undefined {
+  const map = new Map<string, string>();
+  for (const part of [solved, own].filter(Boolean).join('; ').split(';')) {
+    const i = part.indexOf('=');
+    if (i <= 0) continue;
+    const name = part.slice(0, i).trim();
+    const value = part.slice(i + 1).trim();
+    if (name) map.set(name, value);
+  }
+  if (map.size === 0) return undefined;
+  return [...map].map(([n, v]) => `${n}=${v}`).join('; ');
+}
+
+/**
  * Build request headers, optionally merging a solved FlareSolverr context
  * (its UA + cf_clearance cookie) with the provider's own session cookies.
  * Pure — exported for tests.
@@ -62,9 +84,7 @@ export function buildRequestHeaders(
   ctx?: SolvedContext | null
 ): Record<string, string> {
   const { headers = {}, cookie } = opts;
-  const mergedCookie = [ctx?.cookieHeader, cookie]
-    .filter(Boolean)
-    .join('; ');
+  const mergedCookie = mergeCookieHeaders(ctx?.cookieHeader, cookie);
   return {
     'User-Agent': ctx?.userAgent ?? DEFAULT_UA,
     Accept:
