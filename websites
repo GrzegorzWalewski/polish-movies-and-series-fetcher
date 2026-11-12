@@ -8,6 +8,15 @@ https://obejrzyj.to/        # done
 https://cda.pl/             # done — most popular content premium-gated
 https://vider.info/         # done — search API currently captcha/404-gated (site degraded since ~Nov 6); stream CDN verified working
 https://iitv.info/          # done — series-only; link freshness poor for old shows (dead hosters)
+https://seriale.vip/        # done
+https://maxvod.tv/          # done — needs same-site Referer for /player/ pages
+https://telekino.top/       # done — episodes are separate posts, absolute numbering
+https://virpe.cc/           # done — Polish TV focus
+https://bajeczki24.pl/      # done — kids cartoons, Meilisearch proxy API
+https://premiumsmart.eu/    # done — JSON API behind Laravel session cookie
+https://freedisc.pl/        # done — user-upload hosting; geo-blocked from current IP (graceful warning)
+https://cda-hd.cc/          # done — set CDA_HD_COOKIE + CDA_HD_UA in .env (cf_clearance, UA+IP bound)
+https://dokumentalne.net/   # done — movies (documentaries) only; WP REST search + ok.ru embeds
 #
 # DEAD (checked 2026-11-12, connection fails):
 # https://filmowo.xyz/
@@ -16,18 +25,16 @@ https://iitv.info/          # done — series-only; link freshness poor for old 
 # https://openclip.info/  # YouTube-search wrapper: JSFuck gate (GET /load.gif?id=<unix-ts> -> OK cookie)
                           # unlocks the site, but results are YT promos/shorts/clickbait, zero cda tiles,
                           # no series structure, encoding-corrupted titles — nothing to scrape
+# https://vizjer.pl/      # PARKED domain — 5.5KB "Redirecting..." shell POSTs geo data to
+# https://filser.cc/      # router.parklogic.com which routes traffic to affiliate pages
+# https://zerknij.tv/     # (portlandplazapenthouse.com/...). All three clones identical — no catalog exists
 #
 # TODO — next batch candidates (real catalogs, worth GitHub research):
-https://seriale.vip/        # full filman-style catalog
-https://maxvod.tv/          # video library
-https://telekino.top/       # TV/cinema films, WordPress-based
-https://virpe.cc/           # smaller catalog
-https://bajeczki24.pl/      # kids cartoons, no login
-https://premiumsmart.eu/    # small catalog
-https://freedisc.pl/        # user-upload hosting (host, not catalog)
+# (none — all viable sites from the 2026-11-12 triage are done or rejected;
+#  remaining unimplemented: filmypolskie999.blogspot.com, 35mm.online, wfdif.online,
+#  zobaczfilm.com, filmowo.club — see memory for triage notes)
 #
 # LOW PRIORITY (aggregators / wrappers / hard-blocked):
 https://filmypolskie999.blogspot.com/p/film.html  # blogspot, likely just cda embeds
 https://elmorreflix.netlify.app/                  # static frontend over APIs
 https://flowflix.vercel.app/                      # FlowFlixWeb demo — see github-projects
-https://cda-hd.cc/                                # CF 403 (checked 2026-11-12)
