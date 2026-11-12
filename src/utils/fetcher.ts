@@ -23,6 +23,8 @@ export interface FetchOptions {
   site?: string;
   method?: string;
   body?: string;
+  /** statuses to accept as success (vider.info serves valid pages with 404) */
+  allowStatuses?: number[];
 }
 
 /** True when an HTML body looks like a Cloudflare challenge page */
@@ -70,7 +72,7 @@ export async function fetchPage(
         ...(opts.body !== undefined ? { body: opts.body } : {}),
       });
 
-      if (res.ok) {
+      if (res.ok || opts.allowStatuses?.includes(res.status)) {
         const body = await res.text();
         if (isCloudflareChallenge(body)) {
           throw new CloudflareBlockedError(

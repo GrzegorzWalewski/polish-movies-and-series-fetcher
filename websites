@@ -6,12 +6,12 @@ https://ekino-tv.pl/        # done
 https://zaluknij.cc/        # done — CF-blocked plain fetch, graceful warning (cookie env pattern reusable)
 https://obejrzyj.to/        # done
 https://cda.pl/             # done — most popular content premium-gated
+https://vider.info/         # done — search API currently captcha/404-gated (site degraded since ~Nov 6); stream CDN verified working
 #
 # DEAD (checked 2026-11-12, connection fails):
 # https://filmowo.xyz/
 #
 # TODO — next batch candidates (real catalogs, worth GitHub research):
-https://vider.info/         # big PL portal, Python downloader reference exists
 https://seriale.vip/        # full filman-style catalog
 https://iitv.info/          # series catalog
 https://maxvod.tv/          # video library
@@ -26,4 +26,4 @@ https://openclip.info/      # JS-rendered shell ("Wczytywanie...")
 https://filmypolskie999.blogspot.com/p/film.html  # blogspot, likely just cda embeds
 https://elmorreflix.netlify.app/                  # static frontend over APIs
 https://flowflix.vercel.app/                      # FlowFlixWeb demo — see github-projects
-http://cda-hd.cc/                                 # CF 403 (checked 2026-11-12)
+https://cda-hd.cc/                                # CF 403 (checked 2026-11-12)

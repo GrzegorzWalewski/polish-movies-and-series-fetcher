@@ -5,3 +5,9 @@ https://github.com/programmer150/film-docker - stremio addon for filman.cc
 https://github.com/kucharek47/Pobieranie-filmow-i-seriali - filman extractor
 https://github.com/oe-mirrors/e2iplayer-zadmario - in hosts dir there are a lot of polish hosts scrappers + /libs/urlparser.py is resolver for the video streams
 https://github.com/patrrwoj89/plug/tree/fe9c5a825f694292dfdfcad14e76ccb4c5de1685 - lookslike ready made product with many polish providers
+
+vider.info:
+https://github.com/VitaliyOliynyk/advvidedl
+https://github.com/kosciolek/vider.info-downloader
+telekino.top:
+https://github.com/Damianq1/VideoScout-Pro
