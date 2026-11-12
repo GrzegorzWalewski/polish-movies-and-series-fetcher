@@ -1,0 +1,190 @@
+import { describe, it, expect } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+import {
+  parseSearchHtml,
+  parseWatchHtml,
+  buildEpisodeUrl,
+} from '../src/providers/ekino-tv.js';
+import {
+  extractBootstrapData,
+  parseSearchData,
+  parseWatchPageHtml,
+} from '../src/providers/obejrzyj-to.js';
+import {
+  parseSearchHtml as parseZaluknijSearchHtml,
+  filterByType,
+  parseTitleHtml,
+  findEpisodeUrl,
+} from '../src/providers/zaluknij.js';
+import { pickMatches } from '../src/providers/match.js';
+
+const fixturesDir = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
+const fixture = (name: string) =>
+  readFileSync(join(fixturesDir, name), 'utf-8');
+
+const params = {
+  imdbId: 'tt5180501',
+  type: 'tv' as const,
+  title: 'Wiedźmin',
+  originalTitle: 'The Witcher',
+  year: '2019',
+};
+
+describe('ekino-tv', () => {
+  it('parses search results (real markup: title link inside .title)', () => {
+    const results = parseSearchHtml(fixture('ekino-search.html'));
+    expect(results).toHaveLength(3);
+    expect(results[1]).toEqual({
+      title: 'Wiedźmin',
+      url: 'https://ekino-tv.pl/serie/show/wiedzmin-the-witcher/',
+      year: '2019',
+    });
+  });
+
+  it('matches "Wiedźmin" preferring the release year from item id', () => {
+    const results = parseSearchHtml(fixture('ekino-search.html'));
+    expect(results[1].year).toBe('2019');
+    const matches = pickMatches(results, params);
+    // both entries match by title; year 2019 (from item id) picks the series
+    expect(matches[0].url).toBe(
+      'https://ekino-tv.pl/serie/show/wiedzmin-the-witcher/'
+    );
+  });
+
+  it('builds episode url from serie show url (port of zetta slug logic)', () => {
+    expect(
+      buildEpisodeUrl(
+        'https://ekino-tv.pl/serie/show/wiedzmin-the-witcher/',
+        1,
+        1
+      )
+    ).toBe(
+      'https://ekino-tv.pl/serie/watch/wiedzmin-the-witcher+season[1]+episode[1]+'
+    );
+    expect(
+      buildEpisodeUrl('https://ekino-tv.pl/show/12873/', 2, 10)
+    ).toBe(
+      'https://ekino-tv.pl/serie/watch/12873+season[2]+episode[10]+'
+    );
+  });
+
+  it('parses watch page: keeps player/hqq/jetload, filters mix/upzone', () => {
+    const sources = parseWatchHtml(
+      fixture('ekino-watch.html'),
+      'https://ekino-tv.pl/serie/watch/wiedzmin-the-witcher+season[1]+episode[1]+'
+    );
+    const urls = sources.map((s) => s.url);
+    expect(urls).toContain(
+      'https://ekino-tv.pl/watch/f/player/s4z8VrloSf4BrpL6vEfTvsLfhpqeoVsXhDfY1w'
+    );
+    expect(urls).toContain(
+      'https://ekino-tv.pl/watch/f/hqq/hlf1u-eQ1dBWToExHAd8tKXJKwPUInHnLTWKdA'
+    );
+    expect(urls).toContain(
+      'https://ekino-tv.pl/watch/f/jetload/5xwfYzLXZmUC8u-SRQF9HXOoFiDfxtfBCb_5Gg'
+    );
+    // excluded hosts
+    expect(urls.some((u) => u.includes('mix'))).toBe(false);
+    expect(urls.some((u) => u.includes('upzone'))).toBe(false);
+    // player appears twice with different ids -> both kept
+    expect(urls.filter((u) => u.includes('/f/player/'))).toHaveLength(2);
+    // no fallback needed
+    expect(sources.every((s) => s.label !== 'DEFAULT PLAYER')).toBe(true);
+  });
+
+  it('falls back to default player when no ids found', () => {
+    const sources = parseWatchHtml('<html><body></body></html>', 'https://ekino-tv.pl/show/1/T/');
+    expect(sources).toHaveLength(1);
+    expect(sources[0].url).toBe('https://ekino-tv.pl/watch/1/T/');
+    expect(sources[0].label).toBe('DEFAULT PLAYER');
+  });
+});
+
+describe('obejrzyj.to', () => {
+  it('extracts bootstrapData JSON', () => {
+    const data = extractBootstrapData(fixture('obejrzyj-search.html'));
+    expect(data?.loaders?.searchPage?.results).toHaveLength(3);
+  });
+
+  it('parses search page and keeps only series for tv type', () => {
+    const data = extractBootstrapData(fixture('obejrzyj-search.html'));
+    const matches = parseSearchData(data, 'Wiedźmin');
+    expect(matches).toHaveLength(2);
+    // note: zetta's slug algorithm drops non-ASCII ("Wiedźmin" -> "wied-min")
+    expect(matches[0].url).toContain('/titles/the-witcher-2019/wied-min');
+  });
+
+  it('prefers exact imdb_id match from site metadata', () => {
+    const data = extractBootstrapData(fixture('obejrzyj-search.html'));
+    const matches = parseSearchData(data, 'Wiedźmin', 'tt5180501');
+    expect(matches).toHaveLength(1);
+    expect(matches[0].url).toContain('/titles/the-witcher-2019/');
+  });
+
+  it('parses watch page into stream results', () => {
+    const sources = parseWatchPageHtml(fixture('obejrzyj-watch.html'));
+    // main video + alternative 102; alternative id 101 is the main video -> skipped
+    expect(sources).toHaveLength(2);
+    expect(sources[0].url).toBe('https://cdn1.examplehost.tv/hls/s1e1.m3u8');
+    expect(sources[0].quality).toBe('1080p');
+    expect(sources[0].language).toBe('Lektor PL');
+    expect(sources[1].url).toBe('https://host2.examplestream.net/v/abc123.mp4');
+    expect(sources[1].language).toBe('PL napisy & Napisy PL');
+  });
+});
+
+describe('zaluknij.cc', () => {
+  it('parses search results with fallback selector', () => {
+    const results = parseZaluknijSearchHtml(fixture('zaluknij-search.html'));
+    expect(results).toHaveLength(3);
+    expect(results[0].url).toContain('/serial-online/wiedzmin/');
+  });
+
+  it('filters by type using /serial-online/ url pattern', () => {
+    const results = parseZaluknijSearchHtml(fixture('zaluknij-search.html'));
+    const series = filterByType(results, 'tv');
+    expect(series.map((m) => m.url)).toEqual([
+      'https://zaluknij.cc/serial-online/wiedzmin/8787/',
+      'https://zaluknij.cc/serial-online/cos-wiecej/8811/',
+    ]);
+    const movies = filterByType(results, 'movie');
+    expect(movies).toHaveLength(1);
+  });
+
+  it('finds episode url by [sXXeYY] tag', () => {
+    const url = findEpisodeUrl(fixture('zaluknij-title.html'), 1, 2);
+    expect(url).toBe('https://zaluknij.cc/serial-online/wiedzmin/8787/odcinek-2');
+  });
+
+  it('parses title page: decodes base64 data-iframe, excludes junk hosts', () => {
+    const sources = parseTitleHtml(
+      fixture('zaluknij-title.html'),
+      'https://zaluknij.cc/serial-online/wiedzmin/8787/odcinek-1'
+    );
+    expect(sources).toHaveLength(2); // voe row excluded
+    expect(sources[0]).toMatchObject({
+      provider: 'zaluknij.cc',
+      url: 'https://www.cda.pl/video/1234567',
+      language: 'Lektor PL',
+      quality: '1080p',
+    });
+    expect(sources[1].url).toBe('https://ebd.examplecdn.stream/embed/xyz'); // protocol-relative -> https
+  });
+});
+
+describe('fetcher', () => {
+  it('detects Cloudflare challenge pages', async () => {
+    const { isCloudflareChallenge } = await import('../src/utils/fetcher.js');
+    expect(
+      isCloudflareChallenge(
+        '<html><head><title>Just a moment...</title></head><body>cf_chl_opt</body></html>'
+      )
+    ).toBe(true);
+    expect(isCloudflareChallenge('<html><title>Wiedźmin online</title></html>')).toBe(
+      false
+    );
+  });
+});
