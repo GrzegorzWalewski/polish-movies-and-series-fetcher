@@ -1,0 +1,292 @@
+import * as cheerio from 'cheerio';
+import { fetchPage } from '../utils/fetcher.js';
+import type {
+  Provider,
+  ProviderSearchParams,
+  StreamResult,
+} from '../types.js';
+import { pickMatches, cleanTitle, type SiteMatch } from './match.js';
+
+const BASE_URL = 'https://filman.cc';
+
+/**
+ * filman.cc sits behind a Cloudflare managed challenge. Plain HTTP works only
+ * with a valid cf_clearance cookie (tied to your browser's UA + IP): copy the
+ * full cookie header for filman.cc from browser devtools into FILMAN_CC_COOKIE.
+ */
+const COOKIE_ENV = 'FILMAN_CC_COOKIE';
+const UA_ENV = 'FILMAN_CC_UA';
+
+function cookie(): string | undefined {
+  return process.env[COOKIE_ENV]?.trim() || undefined;
+}
+
+/**
+ * cf_clearance is only valid for the exact User-Agent of the browser that
+ * solved the challenge — override it here when using a copied cookie.
+ */
+function cookieHint(): string {
+  return `FILMAN_CC_COOKIE=<cf_clearance cookie copied from your browser devtools> and FILMAN_CC_UA=<that browser's exact User-Agent>`;
+}
+
+const reqHeaders = (referer: string): Record<string, string> => ({
+  Referer: referer,
+  ...(process.env[UA_ENV]?.trim()
+    ? { 'User-Agent': process.env[UA_ENV].trim() }
+    : {}),
+});
+
+/** Parse filman search results (#advanced-search). */
+export function parseSearchHtml(html: string): (SiteMatch & { type: 'movie' | 'tv' })[] {
+  const $ = cheerio.load(html);
+  const results: (SiteMatch & { type: 'movie' | 'tv' })[] = [];
+  const seen = new Set<string>();
+
+  $('#advanced-search a[href*="/m/"], #advanced-search a[href*="/s/"]').each((_, el) => {
+    const $el = $(el);
+    const href = $el.attr('href') ?? '';
+    const title =
+      $el.find('.film_title').text().trim() ||
+      $el.attr('title')?.trim() ||
+      $el.text().trim().split('\n')[0].trim();
+    const type: 'movie' | 'tv' = href.includes('/s/') ? 'tv' : 'movie';
+    const year = $el.find('.film_year').text().trim();
+
+    if (title && href && !seen.has(href)) {
+      seen.add(href);
+      results.push({
+        title: year ? `${title} (${year})` : title,
+        url: absolutize(href),
+        type,
+      });
+    }
+  });
+  return results;
+}
+
+function absolutize(href: string): string {
+  return href.startsWith('http') ? href : BASE_URL + href;
+}
+
+/** Find episode link ([s01e02] tag) from a series page. */
+export function findEpisodeUrl(html: string, season: number, episode: number): string | null {
+  const $ = cheerio.load(html);
+  const tag = `[s${season}e${episode}]`;
+  let found: string | null = null;
+  $('#episode-list a').each((_, el) => {
+    if (found) return;
+    if ($(el).text().includes(tag) || ($(el).attr('href') ?? '').includes(tag.toLowerCase())) {
+      found = absolutize($(el).attr('href') ?? '');
+    }
+  });
+  return found;
+}
+
+interface LinkRow {
+  server: string;
+  version: string;
+  quality: string;
+  /** legacy generation: base64 JSON {src} in data-iframe */
+  embedUrl: string | null;
+  /** current generation: data-link-id + routeToken -> /link/token endpoint */
+  linkId: string | null;
+}
+
+/** Parse both link-table generations from a title/episode page. */
+export function parseLinkRows(html: string): LinkRow[] {
+  const $ = cheerio.load(html);
+  const rows: LinkRow[] = [];
+
+  $('#links tbody tr').each((_, tr) => {
+    const $tr = $(tr);
+    const server = $tr.find('img').attr('alt') ?? $tr.find('a').text().trim();
+    const a = $tr.find('a').first();
+
+    const iframeData = a.attr('data-iframe');
+    let embedUrl: string | null = null;
+    if (iframeData) {
+      try {
+        embedUrl = JSON.parse(
+          Buffer.from(iframeData, 'base64').toString('utf-8')
+        ).src ?? null;
+      } catch {
+        embedUrl = null;
+      }
+    }
+
+    let quality = '';
+    let version = '';
+    $tr.find('td').each((_, td) => {
+      const text = $(td).text().trim();
+      if (/^\d+p$/i.test(text)) quality = text;
+      if (/lektor|napisy|dubb|PL$|^PL$|ENG/i.test(text) && !quality) version = text;
+    });
+
+    if (server && (embedUrl || a.attr('data-link-id'))) {
+      rows.push({
+        server,
+        version,
+        quality,
+        embedUrl,
+        linkId: a.attr('data-link-id') ?? null,
+      });
+    }
+  });
+
+  return rows;
+}
+
+/** `var routeToken = '<alnum>'` from the page's inline script. */
+export function extractRouteToken(html: string): string | null {
+  return /var\s+routeToken\s*=\s*'([A-Za-z0-9]+)'/.exec(html)?.[1] ?? null;
+}
+
+/**
+ * Decode the intermediate tmp-url page: vars _e (base64 payload), _a/_b/_c
+ * (key parts); result[i] = base64decoded(_e)[i] XOR key[i % key.length].
+ */
+export function decodeTmpUrlPage(html: string): string | null {
+  const e = /var\s+_e\s*=\s*'([^']+)'/.exec(html)?.[1];
+  const a = /var\s+_a\s*=\s*'([^']+)'/.exec(html)?.[1];
+  const b = /var\s+_b\s*=\s*'([^']+)'/.exec(html)?.[1];
+  const c = /var\s+_c\s*=\s*'([^']+)'/.exec(html)?.[1];
+  if (!e || !a || !b || !c) return null;
+
+  const key = a + b + c;
+  const raw = Buffer.from(e, 'base64');
+  let out = '';
+  for (let i = 0; i < raw.length; i++) {
+    out += String.fromCharCode(raw[i] ^ key.charCodeAt(i % key.length));
+  }
+  return out;
+}
+
+/** Resolve a current-generation link via the token endpoint. */
+async function resolveTokenLink(
+  pageUrl: string,
+  row: LinkRow,
+  routeToken: string,
+  ck: string | undefined
+): Promise<string | null> {
+  if (!routeToken) return null;
+
+  // the endpoint rejects requests right after page load (e2iplayer finding)
+  await sleep(1100);
+
+  const tokenUrl = `${BASE_URL}/link/token?link_id=${encodeURIComponent(row.linkId!)}&rt=${encodeURIComponent(routeToken)}`;
+  const res = await fetchPage(tokenUrl, {
+    headers: {
+      ...reqHeaders(pageUrl),
+      Accept: 'application/json, text/javascript, */*; q=0.01',
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+    cookie: ck,
+    site: 'filman.cc',
+    retries: 0,
+  });
+  const json = JSON.parse(await res.text()) as { url?: string };
+  if (!json.url) return null;
+
+  const tmpUrl = Buffer.from(json.url, 'base64').toString('utf-8');
+
+  const tmpRes = await fetchPage(tmpUrl, {
+    site: 'filman.cc',
+    retries: 0,
+  });
+  const html = await tmpRes.text();
+  return decodeTmpUrlPage(html) ?? tmpUrl;
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function resolveRows(
+  html: string,
+  pageUrl: string,
+  routeToken: string,
+  ck: string | undefined
+): Promise<StreamResult[]> {
+  const rows = parseLinkRows(html);
+  const seen = new Set<string>();
+  const results: StreamResult[] = [];
+
+  for (const row of rows) {
+    let url: string | null = row.embedUrl;
+    if (!url && row.linkId) {
+      url = await resolveTokenLink(pageUrl, row, routeToken, ck).catch(() => null);
+    }
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+
+    results.push({
+      provider: 'filman.cc',
+      quality: row.quality || null,
+      language: row.version || null,
+      url,
+      label: `${row.server}${row.version ? ` (${row.version})` : ''}`,
+    });
+  }
+  return results;
+}
+
+export const filman: Provider = {
+  name: 'filman.cc',
+  baseUrl: BASE_URL,
+
+  async search(params: ProviderSearchParams): Promise<StreamResult[]> {
+    const ck = cookie();
+    const query = cleanTitle(params.title);
+
+    const fetchOpts = {
+      headers: reqHeaders(`${BASE_URL}/`),
+      cookie: ck,
+      site: this.name,
+      cookieHint: cookieHint(),
+    };
+
+    // endpoint has moved between /wyszukiwarka and /item over the years
+    let res: Response;
+    try {
+      res = await fetchPage(
+        `${BASE_URL}/wyszukiwarka?phrase=${encodeURIComponent(query)}`,
+        fetchOpts
+      );
+    } catch (err) {
+      if (!(err instanceof Error) || !err.message.includes('HTTP 404')) throw err;
+      res = await fetchPage(
+        `${BASE_URL}/item?phrase=${encodeURIComponent(query)}`,
+        fetchOpts
+      );
+    }
+
+    const html = await res.text();
+    // login wall — without an account filman shows the login page instead
+    if (/<title>\s*Logowanie/i.test(html)) {
+      throw new Error(
+        'filman.cc requires a logged-in account (login wall detected). Set FILMAN_CC_COOKIE including your session cookies.'
+      );
+    }
+
+    let items = parseSearchHtml(html);
+    items = items.filter((i) => (params.type === 'tv' ? i.type === 'tv' : i.type === 'movie'));
+    const matches = pickMatches(items, { ...params, title: query });
+    if (matches.length === 0) return [];
+
+    let pageUrl = matches[0].url;
+    let routeToken = '';
+    if (params.type === 'tv' && params.season && params.episode) {
+      const seriesRes = await fetchPage(pageUrl, fetchOpts);
+      const seriesHtml = await seriesRes.text();
+      routeToken = extractRouteToken(seriesHtml) ?? '';
+      const epUrl = findEpisodeUrl(seriesHtml, params.season, params.episode);
+      if (!epUrl) return [];
+      pageUrl = epUrl;
+    }
+
+    const pageRes = await fetchPage(pageUrl, fetchOpts);
+    const pageHtml = await pageRes.text();
+    routeToken = extractRouteToken(pageHtml) || routeToken;
+    return resolveRows(pageHtml, pageUrl, routeToken, ck);
+  },
+};

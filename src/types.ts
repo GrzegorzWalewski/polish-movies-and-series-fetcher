@@ -39,9 +39,14 @@ export interface Provider {
 
 /** Error thrown when a site is behind a Cloudflare challenge we cannot pass */
 export class CloudflareBlockedError extends Error {
-  constructor(public site: string) {
+  constructor(
+    public site: string,
+    cookieHint?: string
+  ) {
     super(
-      `${site} is protected by Cloudflare — headless bypass not supported yet (FlareSolverr integration planned)`
+      cookieHint
+        ? `${site} is protected by Cloudflare — set ${cookieHint} to access it`
+        : `${site} is protected by Cloudflare — headless bypass not supported yet (FlareSolverr integration planned)`
     );
     this.name = 'CloudflareBlockedError';
   }
