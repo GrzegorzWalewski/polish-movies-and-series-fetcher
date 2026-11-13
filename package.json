@@ -1,6 +1,6 @@
 {
-  "name": "movies-series-fetcher",
-  "version": "0.1.0",
+  "name": "polish-movies-and-series-fetcher",
+  "version": "1.0.0",
   "description": "CLI: search movies/series via TMDB, then fetch available stream links from Polish streaming sites",
   "type": "module",
   "bin": {

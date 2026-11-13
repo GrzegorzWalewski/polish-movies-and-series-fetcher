@@ -18,7 +18,7 @@ const program = new Command();
 program
   .name('msf')
   .description('Search movies/series (TMDB) and fetch stream links from Polish streaming sites')
-  .version('0.1.0');
+  .version('1.0.0');
 
 program
   .command('search')
