@@ -94,8 +94,9 @@ export function parseWatchHtml(
     }
   }
 
-  // fallback: the watch page itself is a playable player
-  if (sources.length === 0) {
+  // fallback: the watch page itself is a playable player — movies only
+  // (a series show page has no /watch/ equivalent without an episode)
+  if (sources.length === 0 && fetchUrl.includes('/movie/')) {
     sources.push({
       provider: 'ekino-tv.pl',
       quality: 'Auto',
@@ -140,12 +141,13 @@ export const ekinoTv: Provider = {
     });
 
     // ekino urls: movies live under /movie/show/, series under /serie/show/
-    const byType = matches.filter((m) =>
+    // — never fall back to a match of the other type (a movie must not
+    // resolve to a series page; that produced broken watch URLs)
+    const best = matches.find((m) =>
       params.type === 'tv'
         ? m.url.includes('/serie/')
         : m.url.includes('/movie/')
     );
-    const best = byType[0] ?? matches[0];
     if (!best) return [];
 
     let fetchUrl = best.url;

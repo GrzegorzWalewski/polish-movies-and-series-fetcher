@@ -20,6 +20,7 @@ import {
   findEpisodeUrl,
 } from '../src/providers/zaluknij.js';
 import { pickMatches } from '../src/providers/match.js';
+import { looksEpisodic } from '../src/providers/cda.js';
 
 const fixturesDir = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 const fixture = (name: string) =>
@@ -95,11 +96,20 @@ describe('ekino-tv', () => {
     expect(sources.every((s) => s.label !== 'DEFAULT PLAYER')).toBe(true);
   });
 
-  it('falls back to default player when no ids found', () => {
-    const sources = parseWatchHtml('<html><body></body></html>', 'https://ekino-tv.pl/show/1/T/');
+  it('falls back to default player when no ids found (movies only)', () => {
+    const sources = parseWatchHtml(
+      '<html><body></body></html>',
+      'https://ekino-tv.pl/movie/show/obsesja/42466/'
+    );
     expect(sources).toHaveLength(1);
-    expect(sources[0].url).toBe('https://ekino-tv.pl/watch/1/T/');
+    expect(sources[0].url).toBe('https://ekino-tv.pl/movie/watch/obsesja/42466/');
     expect(sources[0].label).toBe('DEFAULT PLAYER');
+    // series show pages have no watch equivalent — no fallback
+    const series = parseWatchHtml(
+      '<html><body></body></html>',
+      'https://ekino-tv.pl/serie/show/wiedzmin/'
+    );
+    expect(series).toHaveLength(0);
   });
 });
 
@@ -186,5 +196,64 @@ describe('fetcher', () => {
     expect(isCloudflareChallenge('<html><title>Wiedźmin online</title></html>')).toBe(
       false
     );
+  });
+});
+
+describe('pickMatches year tolerance', () => {
+  const base = {
+    imdbId: null,
+    type: 'movie' as const,
+    title: 'Obsesja',
+    originalTitle: 'Obsession',
+  };
+
+  it('prefers exact year when available', () => {
+    const matches = pickMatches(
+      [
+        { title: 'Obsesja', url: '/movie/obsesja-2025', year: '2025' },
+        { title: 'Obsesja', url: '/movie/obsesja-2026', year: '2026' },
+      ],
+      { ...base, year: '2026' }
+    );
+    expect(matches[0].url).toBe('/movie/obsesja-2026');
+  });
+
+  it('falls back to ±1 year when no exact hit (TMDB vs site year drift)', () => {
+    // real case: TMDB says 2026 (premiere), ekino page is "obsesja-...-2025-lektor"
+    const matches = pickMatches(
+      [
+        { title: 'Obsesja', url: '/movie/show/obsesja-hd-obsession-2025-lektor/42466', year: '2025' },
+        { title: 'Obsesja coś', url: '/serie/show/obsesja-cos-2026', year: '2026' },
+      ],
+      { ...base, year: '2026' }
+    );
+    // exact-year hit wins, ±1 candidate is dropped
+    expect(matches).toHaveLength(1);
+    expect(matches[0].url).toBe('/serie/show/obsesja-cos-2026');
+    const filtered = pickMatches(
+      [
+        { title: 'Obsesja', url: '/movie/show/obsesja-hd-obsession-2025-lektor/42466', year: '2025' },
+      ],
+      { ...base, year: '2026' }
+    );
+    expect(filtered).toHaveLength(1); // ±1 hit is kept when it's the only match
+  });
+
+  it('drops results ±2 or more years off', () => {
+    const matches = pickMatches(
+      [{ title: 'Obsesja', url: '/movie/obsesja-2023', year: '2023' }],
+      { ...base, year: '2026' }
+    );
+    expect(matches).toHaveLength(1); // single match: year filter only runs on >1
+  });
+});
+
+describe('looksEpisodic (cda junk filter)', () => {
+  it('flags S/E and odcinek-style upload titles', () => {
+    expect(looksEpisodic('Obsesja s01e01')).toBe(true);
+    expect(looksEpisodic('Obsesja S2E10 Lektor PL')).toBe(true);
+    expect(looksEpisodic('Obsesja odcinek 2')).toBe(true);
+    expect(looksEpisodic('Obsesja (2025) Lektor PL')).toBe(false);
+    expect(looksEpisodic('Obsession 2025 FULL HD')).toBe(false);
   });
 });

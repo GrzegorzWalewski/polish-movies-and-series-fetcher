@@ -15,6 +15,8 @@ import { resolveByse, byseEmbedHosts } from './byse.js';
 import { resolveStreamtape, streamtapeEmbedHosts } from './streamtape.js';
 import { resolveOkru, okruEmbedHosts } from './okru.js';
 import { resolveTvpVod, tvpVodEmbedHosts } from './tvpvod.js';
+import { resolveMaxvod, maxvodEmbedHosts } from './maxvod.js';
+import { resolveVidneo, vidneoEmbedHosts } from './vidneo.js';
 
 export interface ResolvedMedia {
   url: string;
@@ -76,6 +78,8 @@ const embedRegistry: { hosts: string[]; resolver: EmbedResolver }[] = [
   { hosts: streamtapeEmbedHosts, resolver: { resolve: resolveStreamtape } },
   { hosts: okruEmbedHosts, resolver: { resolve: resolveOkru } },
   { hosts: tvpVodEmbedHosts, resolver: { resolve: resolveTvpVod } },
+  { hosts: maxvodEmbedHosts, resolver: { resolve: resolveMaxvod } },
+  { hosts: vidneoEmbedHosts, resolver: { resolve: resolveVidneo } },
 ];
 
 /**
@@ -134,7 +138,7 @@ export async function fetchEmbedText(
     method?: string;
     body?: string;
   }
-): Promise<{ ok: boolean; status: number; text: string } | null> {
+): Promise<{ ok: boolean; status: number; text: string; url?: string } | null> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), opts.timeoutMs ?? 12_000);
   try {
@@ -148,7 +152,7 @@ export async function fetchEmbedText(
       redirect: 'follow',
       signal: controller.signal,
     });
-    return { ok: res.ok, status: res.status, text: await res.text() };
+    return { ok: res.ok, status: res.status, text: await res.text(), url: res.url };
   } catch {
     return null;
   } finally {

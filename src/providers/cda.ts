@@ -212,6 +212,13 @@ export const cda: Provider = {
       if (withEpisode.length > 0) candidates = withEpisode;
     }
 
+    // movie queries must not resolve episodic junk uploads ("Obsesja s01e01",
+    // "Obsesja odcinek 2") that match the title by prefix
+    if (params.type === 'movie') {
+      const nonEpisodic = candidates.filter((m) => !looksEpisodic(m.title));
+      if (nonEpisodic.length > 0) candidates = nonEpisodic;
+    }
+
     const results: StreamResult[] = [];
     for (const match of candidates.slice(0, MAX_MATCHES)) {
       try {
@@ -227,4 +234,9 @@ export const cda: Provider = {
 /** "Diuna odcinek 3" matches episode 3 */
 function matchesQueryEpisode(title: string, episode: number): boolean {
   return new RegExp(`\\bodcinek\\s+0*${episode}\\b`, 'i').test(title);
+}
+
+/** Upload title carries series markers (s01e01 / "odcinek") → episodic junk */
+export function looksEpisodic(title: string): boolean {
+  return /\bs\d{1,2}e\d{1,2}\b/i.test(title) || /\bodcinek\b/i.test(title);
 }

@@ -42,13 +42,23 @@ export function pickMatches<T extends SiteMatch>(
   let matches = results.filter((r) => matchesQuery(r.title, cleanTitle(params.title)));
 
   if (params.year && matches.length > 1) {
-    const withYear = matches.filter(
-      (m) =>
-        m.year === params.year ||
-        m.title.includes(params.year) ||
-        m.url.includes(params.year)
-    );
-    if (withYear.length > 0) matches = withYear;
+    const yearOk = (m: T, y: string) =>
+      m.year === y || m.title.includes(y) || m.url.includes(y);
+
+    const exact = matches.filter((m) => yearOk(m, params.year!));
+    if (exact.length > 0) {
+      matches = exact;
+    } else {
+      // TMDB and site years are often off by one (different release dates,
+      // premiere vs. festival year) — fall back to ±1 when no exact hit
+      const y = parseInt(params.year, 10);
+      if (Number.isFinite(y)) {
+        const near = matches.filter(
+          (m) => yearOk(m, String(y - 1)) || yearOk(m, String(y + 1))
+        );
+        if (near.length > 0) matches = near;
+      }
+    }
   }
 
   return matches.sort((a, b) => a.title.length - b.title.length);

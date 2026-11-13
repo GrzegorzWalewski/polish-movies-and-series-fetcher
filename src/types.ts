@@ -18,6 +18,8 @@ export interface StreamResult {
   language: string | null; // "PL", "Lektor PL", "PL napisy"...
   url: string; // direct m3u8/mp4 or embed URL
   label?: string | null; // host/player name, e.g. "Cda (Lektor PL)"
+  /** headers the player must send with the URL (Referer/UA) — advisory */
+  headers?: Record<string, string>;
 }
 
 /** Provider search params — Polish sites search by title+year, not imdb_id */
