@@ -123,6 +123,39 @@ export function buildEpisodeUrl(
   return `${BASE_URL}/serie/watch/${slug}+season[${season}]+episode[${episode}]+`;
 }
 
+/**
+ * watch/f URLs are interstitials ("Przejdź do odtwarzacza" button): the page
+ * JS redirects to a single-use play.ekino.link token, whose page embeds the
+ * real hoster player in an iframe. Follow the chain server-side and return
+ * the embed URL (byse-family mfw09.org etc.) so the resolver layer can make
+ * it playable. Any failure → null (keep the interstitial URL as external).
+ */
+export async function resolveEkinoWatch(watchUrl: string): Promise<string | null> {
+  try {
+    const wRes = await fetchPage(watchUrl, {
+      headers: HEADERS,
+      site: 'ekino-tv.pl',
+      retries: 0,
+    });
+    const playUrl = /href="(https:\/\/play\.ekino\.link\/[^"]+)"/.exec(
+      await wRes.text()
+    )?.[1];
+    if (!playUrl) return null;
+
+    const pRes = await fetchPage(playUrl, {
+      headers: { Referer: 'https://ekino-tv.pl/' },
+      site: 'ekino-tv.pl',
+      retries: 0,
+    });
+    const src = /<iframe[^>]*\ssrc="(https?:\/\/[^"]+)"/i.exec(
+      await pRes.text()
+    )?.[1];
+    return src ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export const ekinoTv: Provider = {
   name: 'ekino-tv.pl',
   baseUrl: BASE_URL,
@@ -159,6 +192,22 @@ export const ekinoTv: Provider = {
       headers: HEADERS,
       site: this.name,
     });
-    return parseWatchHtml(await watchRes.text(), fetchUrl);
+    let sources = parseWatchHtml(await watchRes.text(), fetchUrl);
+
+    // swap the first few interstitial URLs for real hoster embeds (tokens
+    // are single-use; unresolved ones stay as browser-playable externals)
+    const swapped: StreamResult[] = [];
+    for (let i = 0; i < sources.length; i++) {
+      const s = sources[i];
+      if (i < 3 && s.url.includes('/watch/f/')) {
+        const embed = await resolveEkinoWatch(s.url);
+        swapped.push(embed ? { ...s, url: embed } : s);
+      } else {
+        swapped.push(s);
+      }
+    }
+    sources = swapped;
+
+    return sources;
   },
 };

@@ -34,6 +34,8 @@ export async function resolveVidneo(
   url: string,
   timeoutMs: number
 ): Promise<ResolvedMedia | null> {
+  // our own /hls/ output sits on vidneo.cc too — already direct
+  if (/\/hls\/.*\.m3u8(\?|#|$)/i.test(url)) return null;
   const page = await fetchEmbedText(url, { headers: { Referer: url }, timeoutMs });
   if (!page || !page.ok) return null;
   const path = extractVidneoHlsPath(page.text);

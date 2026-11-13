@@ -35,6 +35,9 @@ export async function resolveCda(
   url: string,
   timeoutMs: number
 ): Promise<ResolvedMedia | null> {
+  // direct CDN mp4/HLS URLs (vwawNNN.cda.pl/…) also sit under *.cda.pl —
+  // they're already playable, don't re-resolve them through the embed page
+  if (/\.(mp4|m3u8|mpd)(\?|#|$)/i.test(url)) return null;
   const id = normalizeCdaId(url);
   if (!id) return null;
 

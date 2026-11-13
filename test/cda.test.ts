@@ -8,6 +8,8 @@ import {
   decodeCdaFile,
   parsePlayerData,
   detectLanguage,
+  yearDiffers,
+  formatDuration,
 } from '../src/providers/cda.js';
 
 const fixturesDir = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
@@ -81,5 +83,20 @@ describe('cda.pl language detection', () => {
     expect(detectLanguage('Diuna (1984) Napisy PL')).toBe('Napisy PL');
     expect(detectLanguage('Film Dubbing PL')).toBe('Dubbing PL');
     expect(detectLanguage('Diuna odcinek 1')).toBeNull();
+  });
+});
+
+describe('cda.pl junk-upload filters', () => {
+  it('yearDiffers: flags uploads self-labeling a different year', () => {
+    expect(yearDiffers('Obsesja. 2009. Lektor.pl', '2026')).toBe(true);
+    expect(yearDiffers('Obsesja (2004) FULL HD', '2026')).toBe(true);
+    expect(yearDiffers('Obsesja 2025 Lektor PL', '2026')).toBe(false); // ±1 ok
+    expect(yearDiffers('Obsesja (2026) Napisy PL', '2026')).toBe(false);
+    expect(yearDiffers('Obsesja Lektor PL', '2026')).toBe(false); // no year
+  });
+
+  it('formatDuration renders h:mm:ss', () => {
+    expect(formatDuration(5029)).toBe('1:23:49');
+    expect(formatDuration(754)).toBe('12:34');
   });
 });

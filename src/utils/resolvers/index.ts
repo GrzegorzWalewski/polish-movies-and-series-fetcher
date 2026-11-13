@@ -37,23 +37,26 @@ function isDirectMediaUrl(url: string): boolean {
   return DIRECT_MEDIA_RE.test(url);
 }
 
-/**
- * Classify a provider-returned stream URL: playable media → 'direct',
- * known hoster embed → 'embed' (resolver may turn it into 'direct'),
- * everything else (site page, player page) → 'page'.
- */
-export function classifyStreamUrl(url: string): StreamUrlKind {
-  if (isDirectMediaUrl(url)) return 'direct';
-
+function registryEntryFor(url: string): { hosts: string[]; resolver: EmbedResolver } | null {
   let host: string;
   try {
     host = new URL(url).hostname.toLowerCase();
   } catch {
-    return 'page';
+    return null;
   }
-  for (const entry of embedRegistry) {
-    if (entry.hosts.some((h) => hostMatches(host, h))) return 'embed';
-  }
+  return embedRegistry.find((e) => e.hosts.some((h) => hostMatches(host, h))) ?? null;
+}
+
+/**
+ * Classify a provider-returned stream URL: playable media → 'direct',
+ * known hoster embed → 'embed' (resolver may turn it into 'direct'),
+ * everything else (site page, player page) → 'page'.
+ * Embed hosts take priority over the extension check: their URLs may
+ * carry media-like filenames (streamtape /e/<id>/movie.mkv).
+ */
+export function classifyStreamUrl(url: string): StreamUrlKind {
+  if (registryEntryFor(url)) return 'embed';
+  if (isDirectMediaUrl(url)) return 'direct';
   return 'page';
 }
 
@@ -90,16 +93,8 @@ export async function resolveEmbed(
   url: string,
   timeoutMs = 15_000
 ): Promise<ResolvedMedia | null> {
-  if (isDirectMediaUrl(url)) return null; // already direct, nothing to do
-
-  let host: string;
-  try {
-    host = new URL(url).hostname.toLowerCase();
-  } catch {
-    return null;
-  }
-
-  const entry = embedRegistry.find((e) => e.hosts.some((h) => hostMatches(host, h)));
+  const entry = registryEntryFor(url);
+  // no known resolver; already-direct media needs no resolution either
   if (!entry) return null;
 
   try {

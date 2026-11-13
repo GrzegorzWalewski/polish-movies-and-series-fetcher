@@ -227,9 +227,10 @@ describe('pickMatches year tolerance', () => {
       ],
       { ...base, year: '2026' }
     );
-    // exact-year hit wins, ±1 candidate is dropped
-    expect(matches).toHaveLength(1);
+    // exact-year ranks first, ±1 kept after it as a fallback
+    expect(matches).toHaveLength(2);
     expect(matches[0].url).toBe('/serie/show/obsesja-cos-2026');
+    expect(matches[1].url).toBe('/movie/show/obsesja-hd-obsession-2025-lektor/42466');
     const filtered = pickMatches(
       [
         { title: 'Obsesja', url: '/movie/show/obsesja-hd-obsession-2025-lektor/42466', year: '2025' },
@@ -237,6 +238,18 @@ describe('pickMatches year tolerance', () => {
       { ...base, year: '2026' }
     );
     expect(filtered).toHaveLength(1); // ±1 hit is kept when it's the only match
+  });
+
+  it('drops results ±2 or more years off when better candidates exist', () => {
+    const matches = pickMatches(
+      [
+        { title: 'Obsesja', url: '/movie/obsesja-2023', year: '2023' },
+        { title: 'Obsesja', url: '/movie/obsesja-2026', year: '2026' },
+      ],
+      { ...base, year: '2026' }
+    );
+    expect(matches).toHaveLength(1);
+    expect(matches[0].url).toBe('/movie/obsesja-2026');
   });
 
   it('drops results ±2 or more years off', () => {

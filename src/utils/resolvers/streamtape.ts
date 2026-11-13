@@ -99,6 +99,8 @@ export async function resolveStreamtape(
   url: string,
   timeoutMs: number
 ): Promise<ResolvedMedia | null> {
+  // our own /get_video output sits on streamtape.com too — already direct
+  if (/\/get_video\?/.test(url)) return null;
   const videoId = extractStreamtapeId(url);
   if (!videoId) return null;
 

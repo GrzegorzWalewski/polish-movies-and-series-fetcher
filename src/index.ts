@@ -123,6 +123,7 @@ program
                 title: media.plTitle,
                 originalTitle: media.originalTitle,
                 year: media.year,
+                runtimeMinutes: media.runtimeMinutes,
                 season,
                 episode,
                 absoluteEpisode,

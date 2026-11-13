@@ -81,6 +81,8 @@ interface PlayerData {
   title?: string;
   quality?: string;
   file?: string;
+  /** media length in seconds (string) — used to drop wrong uploads */
+  duration?: string;
   manifest_apple?: string | null;
   manifest_drm_proxy?: string | null;
   manifest_drm_header?: string | null;
@@ -114,7 +116,10 @@ export function detectLanguage(title: string): string | null {
 }
 
 /** Fetch the embed page and turn it into stream results (all qualities). */
-async function resolveVideo(item: CdaSearchItem): Promise<StreamResult[]> {
+async function resolveVideo(
+  item: CdaSearchItem,
+  expectedSeconds?: number | null
+): Promise<StreamResult[]> {
   const embedUrl = `https://ebd.cda.pl/620x368/${item.id}`;
   const res = await fetchPage(embedUrl, {
     headers: { 'User-Agent': PLAYER_UA, Referer: `${BASE_URL}/` },
@@ -127,6 +132,21 @@ async function resolveVideo(item: CdaSearchItem): Promise<StreamResult[]> {
   if (!video) return [];
   if (video.manifest_drm_proxy || video.manifest_drm_header) return [];
 
+  const duration = Number(video.duration);
+  const hasDuration = Number.isFinite(duration) && duration > 0;
+
+  // runtime mismatch → upload of a different video ("some guy talking" for
+  // a movie query); generous ratio bands tolerate cuts, intros and part-ups
+  if (expectedSeconds && hasDuration) {
+    const ratio = duration / expectedSeconds;
+    if (ratio < 0.6 || ratio > 1.5) return [];
+  }
+
+  // surface the verified length in the row title
+  const label = hasDuration
+    ? `${item.title} · ${formatDuration(duration)}`
+    : item.title;
+
   const language = detectLanguage(item.title);
   const results: StreamResult[] = [];
 
@@ -136,7 +156,7 @@ async function resolveVideo(item: CdaSearchItem): Promise<StreamResult[]> {
       quality: qualityLabel(video.quality),
       language,
       url: decodeCdaFile(video.file),
-      label: item.title,
+      label,
     });
 
     // remaining qualities need one refetch per quality name
@@ -158,7 +178,7 @@ async function resolveVideo(item: CdaSearchItem): Promise<StreamResult[]> {
             quality: name,
             language,
             url: decodeCdaFile(qVideo.file),
-            label: item.title,
+            label,
           });
         }
       } catch {
@@ -171,11 +191,22 @@ async function resolveVideo(item: CdaSearchItem): Promise<StreamResult[]> {
       quality: qualityLabel(video.quality),
       language,
       url: video.manifest_apple,
-      label: item.title,
+      label,
     });
   }
 
   return results;
+}
+
+/** 5029 → "1:23:49" */
+export function formatDuration(seconds: number): string {
+  const s = Math.round(seconds);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return h > 0
+    ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`
+    : `${m}:${String(sec).padStart(2, '0')}`;
 }
 
 function qualityLabel(code: string | undefined): string | null {
@@ -217,12 +248,26 @@ export const cda: Provider = {
     if (params.type === 'movie') {
       const nonEpisodic = candidates.filter((m) => !looksEpisodic(m.title));
       if (nonEpisodic.length > 0) candidates = nonEpisodic;
+
+      // upload title naming a different year ("Obsesja. 2009.") — cda search
+      // results carry no year metadata, but uploads usually self-label
+      if (params.year) {
+        const sameEra = candidates.filter((m) => !yearDiffers(m.title, params.year!));
+        if (sameEra.length > 0) candidates = sameEra;
+      }
     }
+
+    // TMDB runtime (movies) — uploads of a different video ("some guy talking")
+    // are dropped by duration once the embed page reveals the real length
+    const expectedSeconds =
+      params.type === 'movie' && params.runtimeMinutes
+        ? params.runtimeMinutes * 60
+        : null;
 
     const results: StreamResult[] = [];
     for (const match of candidates.slice(0, MAX_MATCHES)) {
       try {
-        results.push(...(await resolveVideo(match)));
+        results.push(...(await resolveVideo(match, expectedSeconds)));
       } catch {
         // one dead video must not kill the rest
       }
@@ -230,6 +275,13 @@ export const cda: Provider = {
     return results;
   },
 };
+
+/** Extracted (19|20)XX year differs from TMDB's by more than 1 */
+export function yearDiffers(title: string, year: string): boolean {
+  const m = /\b(19|20)\d{2}\b/.exec(title);
+  if (!m) return false;
+  return Math.abs(Number(m[0]) - Number(year)) > 1;
+}
 
 /** "Diuna odcinek 3" matches episode 3 */
 function matchesQueryEpisode(title: string, episode: number): boolean {

@@ -33,6 +33,9 @@ export interface ProviderSearchParams {
   episode?: number;
   /** season+episode flattened to the show's absolute episode number (TMDB) */
   absoluteEpisode?: number;
+  /** TMDB runtime (movie length or episode length, minutes) — lets providers
+   * drop uploads of the wrong video (cda junk uploads match by title only) */
+  runtimeMinutes?: number | null;
 }
 
 export interface Provider {

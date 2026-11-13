@@ -19,7 +19,12 @@
 
 import { fetchEmbedText, type ResolvedMedia } from './index.js';
 
-export const byseEmbedHosts = ['byse*'];
+export const byseEmbedHosts = ['byse*', 'mfw09.org']; // mfw09.org = ekino's byse frontend
+
+/** byse-family API hosts (rotating byseNN domains + ekino's mfw09 frontend) */
+export function isByseHost(host: string): boolean {
+  return host.startsWith('byse') || host === 'mfw09.org';
+}
 
 // ---- custom 256-bit hash (reimplementation of the bundle's gr()) ----
 
@@ -214,7 +219,7 @@ export async function resolveByse(
   } catch {
     return null;
   }
-  if (!host.startsWith('byse') || !code) return null;
+  if (!isByseHost(host) || !code) return null;
 
   const api = `${new URL(url).protocol}//${host}`;
   const headers = {

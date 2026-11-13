@@ -33,7 +33,9 @@ export function matchesQuery(title: string, query: string): boolean {
 /**
  * Polish sites don't accept imdb_id — we search by title and match results,
  * then prefer the shortest title (closest match) and results whose release
- * year matches TMDB's.
+ * year matches TMDB's. TMDB and site years are often off by one (premiere
+ * vs. festival/release dates) — ±1-year items are kept as lower-ranked
+ * fallbacks instead of being dropped outright.
  */
 export function pickMatches<T extends SiteMatch>(
   results: T[],
@@ -44,21 +46,26 @@ export function pickMatches<T extends SiteMatch>(
   if (params.year && matches.length > 1) {
     const yearOk = (m: T, y: string) =>
       m.year === y || m.title.includes(y) || m.url.includes(y);
+    const y = parseInt(params.year, 10);
+    const rank = (m: T): number => {
+      if (yearOk(m, params.year!)) return 0;
+      if (Number.isFinite(y) && (yearOk(m, String(y - 1)) || yearOk(m, String(y + 1))))
+        return 1;
+      return 2;
+    };
 
-    const exact = matches.filter((m) => yearOk(m, params.year!));
-    if (exact.length > 0) {
-      matches = exact;
+    if (!matches.some((m) => rank(m) === 0)) {
+      // no exact-year hit: keep ±1 items if any
+      const near = matches.filter((m) => rank(m) <= 1);
+      if (near.length > 0) matches = near;
     } else {
-      // TMDB and site years are often off by one (different release dates,
-      // premiere vs. festival year) — fall back to ±1 when no exact hit
-      const y = parseInt(params.year, 10);
-      if (Number.isFinite(y)) {
-        const near = matches.filter(
-          (m) => yearOk(m, String(y - 1)) || yearOk(m, String(y + 1))
-        );
-        if (near.length > 0) matches = near;
-      }
+      // exact hit: drop items clearly off-year, keep ±1 as fallbacks
+      matches = matches.filter((m) => rank(m) < 2);
     }
+    matches = [...matches].sort(
+      (a, b) => rank(a) - rank(b) || a.title.length - b.title.length
+    );
+    return matches;
   }
 
   return matches.sort((a, b) => a.title.length - b.title.length);
