@@ -265,13 +265,15 @@ export const cda: Provider = {
         : null;
 
     const results: StreamResult[] = [];
-    for (const match of candidates.slice(0, MAX_MATCHES)) {
-      try {
-        results.push(...(await resolveVideo(match, expectedSeconds)));
-      } catch {
-        // one dead video must not kill the rest
-      }
-    }
+    await Promise.all(
+      candidates.slice(0, MAX_MATCHES).map(async (match) => {
+        try {
+          results.push(...(await resolveVideo(match, expectedSeconds)));
+        } catch {
+          // one dead video must not kill the rest
+        }
+      })
+    );
     return results;
   },
 };

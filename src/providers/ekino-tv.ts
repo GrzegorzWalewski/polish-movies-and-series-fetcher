@@ -197,15 +197,16 @@ export const ekinoTv: Provider = {
     // swap the first few interstitial URLs for real hoster embeds (tokens
     // are single-use; unresolved ones stay as browser-playable externals)
     const swapped: StreamResult[] = [];
-    for (let i = 0; i < sources.length; i++) {
-      const s = sources[i];
-      if (i < 3 && s.url.includes('/watch/f/')) {
-        const embed = await resolveEkinoWatch(s.url);
-        swapped.push(embed ? { ...s, url: embed } : s);
-      } else {
-        swapped.push(s);
-      }
-    }
+    await Promise.all(
+      sources.map(async (s, i) => {
+        if (i < 3 && s.url.includes('/watch/f/')) {
+          const embed = await resolveEkinoWatch(s.url);
+          swapped.push(embed ? { ...s, url: embed } : s);
+        } else {
+          swapped.push(s);
+        }
+      })
+    );
     sources = swapped;
 
     return sources;

@@ -137,7 +137,9 @@ export const maxvod: Provider = {
 
     const results: StreamResult[] = [];
     const seen = new Set<string>();
-    for (const s of sources) {
+    // long shows list every dubbed/lektor variant per quality — cap the
+    // emission (best sources first, sortSources sorts video>iframe, quality desc)
+    for (const s of sources.slice(0, 6)) {
       // 'original' variant = ad-supported iframe twin of a direct source
       if (s.variant === 'original') continue;
       const url = toPlayUrl(s.uuid, false);
