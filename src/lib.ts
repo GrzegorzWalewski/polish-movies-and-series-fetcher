@@ -33,5 +33,13 @@ export {
   type ProviderAttempt,
 } from './utils/cloudflare.js';
 
+// embed resolvers
+export {
+  resolveEmbed,
+  classifyStreamUrl,
+  type ResolvedMedia,
+  type StreamUrlKind,
+} from './utils/resolvers/index.js';
+
 // env
 export { loadEnvFile } from './utils/env.js';
