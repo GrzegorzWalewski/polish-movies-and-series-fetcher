@@ -212,6 +212,10 @@ export const serialeVip: Provider = {
     const seen = new Set<string>();
     for (const item of items_) {
       if (seen.has(item.url)) continue;
+      // "VIP"-player file URLs (/get_file/…) are session-gated: 403 without
+      // the site's browser session, and they masquerade as direct media
+      // because the path contains ".mp4". Dead rows — never emit them.
+      if (/\/get_file\//.test(item.url)) continue;
       seen.add(item.url);
       results.push({
         provider: 'seriale.vip',

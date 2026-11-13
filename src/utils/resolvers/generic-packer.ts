@@ -48,7 +48,11 @@ export async function resolveGenericPacker(
     : page.text;
 
   const media = findMediaUrl(unpacked);
-  if (media) {
+  // Reject junk "file" values: some players (e.g. fsst embedding DLE
+  // playlists) put a multi-quality string in the file field —
+  // "https://…360p.mp4/,[720p]https://…720p.mp4" — which is not a fetchable
+  // media URL even though it ends in .mp4.
+  if (media && /^https?:\/\/[^"',\s]+$/.test(media)) {
     return { url: media, headers: { Referer: url } };
   }
   return null;
