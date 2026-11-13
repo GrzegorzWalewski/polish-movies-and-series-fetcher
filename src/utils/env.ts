@@ -5,11 +5,10 @@ import { join } from 'node:path';
  * Minimal .env loader (KEY=VALUE lines, # comments). Values already present
  * in the environment are never overwritten. Called once at CLI startup.
  */
-export function loadEnvFile(): void {
-  const envPath = join(process.cwd(), '.env');
+export function loadEnvFile(path = join(process.cwd(), '.env')): void {
   let content: string;
   try {
-    content = readFileSync(envPath, 'utf-8');
+    content = readFileSync(path, 'utf-8');
   } catch {
     return;
   }

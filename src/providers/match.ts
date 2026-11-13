@@ -35,10 +35,10 @@ export function matchesQuery(title: string, query: string): boolean {
  * then prefer the shortest title (closest match) and results whose release
  * year matches TMDB's.
  */
-export function pickMatches(
-  results: SiteMatch[],
+export function pickMatches<T extends SiteMatch>(
+  results: T[],
   params: ProviderSearchParams
-): SiteMatch[] {
+): T[] {
   let matches = results.filter((r) => matchesQuery(r.title, cleanTitle(params.title)));
 
   if (params.year && matches.length > 1) {

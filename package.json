@@ -6,6 +6,10 @@
   "bin": {
     "msf": "./dist/index.js"
   },
+  "exports": {
+    ".": "./dist/index.js",
+    "./lib": "./dist/lib.js"
+  },
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc",

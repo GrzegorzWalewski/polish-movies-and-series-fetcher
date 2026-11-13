@@ -198,7 +198,10 @@ export const premiumsmart: Provider = {
       );
       if (!season || season.available_episodes_count === 0) return [];
 
-      const episodes = await apiPages<{ episode_number?: number }>(
+      const episodes = await apiPages<{
+        episode_number?: number;
+        has_sources?: boolean;
+      }>(
         `titles/${titleId}/seasons/${params.season}/episodes`,
         100,
         cookie

@@ -119,15 +119,31 @@ export async function resolveMediaDetails(
     r.json()
   )) as TmdbDetails;
 
-  const isMovie = candidate.type === 'movie';
+  return mapTmdbDetails(details, {
+    type: candidate.type,
+    tmdbId: candidate.tmdbId,
+    fallbackTitle: candidate.title,
+  });
+}
+
+/**
+ * Pure mapping from a TMDB details payload to MediaResult — shared by
+ * resolveMediaDetails (TMDB id path) and resolveMediaDetailsFromImdb
+ * (/find path, where movie/tv payloads nest under movie_results/tv_results).
+ */
+export function mapTmdbDetails(
+  details: TmdbDetails,
+  ref: { type: MediaType; tmdbId: number; fallbackTitle: string }
+): MediaResult {
+  const isMovie = ref.type === 'movie';
   return {
     type: isMovie ? 'movie' : 'tv',
-    tmdbId: candidate.tmdbId,
+    tmdbId: ref.tmdbId,
     imdbId: details.external_ids?.imdb_id ?? null,
-    plTitle: (isMovie ? details.title : details.name) ?? candidate.title,
+    plTitle: (isMovie ? details.title : details.name) ?? ref.fallbackTitle,
     originalTitle:
       (isMovie ? details.original_title : details.original_name) ??
-      candidate.title,
+      ref.fallbackTitle,
     year:
       (isMovie ? details.release_date : details.first_air_date)?.slice(0, 4) ??
       '',
@@ -135,4 +151,45 @@ export async function resolveMediaDetails(
       ? (details.runtime ?? null)
       : (details.episode_run_time?.[0] ?? null),
   };
+}
+
+/**
+ * Resolve a TMDB MediaResult from an IMDb id (Stremio-style "tt…" ids).
+ * GET /find/{imdbId} → first movie_results / tv_results hit → details call
+ * (for tmdbId + external_ids.imdb_id). Throws on TMDB auth failure.
+ */
+export async function resolveMediaDetailsFromImdb(
+  imdbId: string,
+  type: MediaType
+): Promise<MediaResult | null> {
+  if (!process.env.TMDB_READ_TOKEN) throw new TmdbAuthError();
+
+  const findUrl = `${TMDB_BASE}/find/${encodeURIComponent(imdbId)}?external_source=imdb_id&language=pl-PL`;
+  const findRes = await fetch(findUrl, { headers: headers() });
+  if (findRes.status === 401) throw new TmdbAuthError();
+  const find = (await findRes.json()) as {
+    movie_results?: TmdbDetailsWithId[];
+    tv_results?: TmdbDetailsWithId[];
+  };
+
+  const hit =
+    (type === 'movie' ? find.movie_results?.[0] : find.tv_results?.[0]) ??
+    (type === 'movie' ? find.tv_results?.[0] : find.movie_results?.[0]);
+  if (!hit?.id) return null;
+
+  const endpoint = type === 'movie' ? 'movie' : 'tv';
+  const url = `${TMDB_BASE}/${endpoint}/${hit.id}?language=pl-PL&append_to_response=external_ids`;
+  const details = (await fetch(url, { headers: headers() }).then((r) =>
+    r.json()
+  )) as TmdbDetails;
+
+  return mapTmdbDetails(details, {
+    type,
+    tmdbId: hit.id,
+    fallbackTitle: hit.title ?? hit.name ?? imdbId,
+  });
+}
+
+interface TmdbDetailsWithId extends TmdbDetails {
+  id: number;
 }

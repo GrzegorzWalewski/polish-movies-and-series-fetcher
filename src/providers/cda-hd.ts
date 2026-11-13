@@ -209,7 +209,7 @@ export const cdaHd: Provider = {
 
     // tv: series page -> season -> episode page -> player tabs
     const seasons = parseSeasons(await fetchHtml(match.url));
-    const episodes =
+    const episodes: SeasonEpisodes[number] =
       (params.season && seasons[params.season]) ||
       Object.values(seasons)[0] ||
       [];
