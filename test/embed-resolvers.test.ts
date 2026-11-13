@@ -13,6 +13,15 @@ import {
   keyFromParts,
   decryptPlayback,
 } from '../src/utils/resolvers/byse.js';
+import {
+  extractStreamtapeId,
+  extractIdeoolink,
+  parseRobotConstruction,
+  assembleRobotUrl,
+  extractGetVideoParams,
+} from '../src/utils/resolvers/streamtape.js';
+import { extractOkruMediaUrl } from '../src/utils/resolvers/okru.js';
+import { extractTvpProductId } from '../src/utils/resolvers/tvpvod.js';
 
 function b64urlEncode(bytes: Uint8Array): string {
   return Buffer.from(bytes)
@@ -251,6 +260,88 @@ describe('byse pow + playback decrypt', () => {
     const p2 = b64urlEncode(new Uint8Array([4, 5]));
     expect([...keyFromParts({ algorithm: 'AES-GCM', iv: '', payload: '', key_parts: [p1, p2], version: '99' })]).toEqual([1, 2, 3, 4, 5]);
     expect(keyFromParts({ algorithm: 'AES-GCM', iv: '', payload: '', key_parts: [], version: '1' })).toHaveLength(0);
+  });
+});
+
+describe('streamtape helpers', () => {
+  it('extracts the video id from /e/ paths', () => {
+    expect(extractStreamtapeId('https://streamtape.to/e/AbCdEf123/')).toBe('AbCdEf123');
+    expect(extractStreamtapeId('https://streamtape.com/e/xyz?x=1')).toBe('xyz');
+    expect(extractStreamtapeId('https://streamtape.com/v/xyz')).toBeNull();
+    expect(extractStreamtapeId('garbage')).toBeNull();
+  });
+
+  it('reads the server-rendered ideoolink div', () => {
+    expect(extractIdeoolink('<div id="ideoolink" class="x">//get.st/v.mp4</div>')).toBe(
+      'https://get.st/v.mp4'
+    );
+    expect(extractIdeoolink("<div id='ideoolink'>https://get.st/v.mp4</div>")).toBe(
+      'https://get.st/v.mp4'
+    );
+    expect(extractIdeoolink('<div id="other">x</div>')).toBeNull();
+  });
+
+  it('parses and assembles the robot() JS construction', () => {
+    const html =
+      `document.getElementById('ideoolink').innerHTML = '//get.site.com/get_video?id=abc';` +
+      `robot('%26expires%3D123%26token%3DXY').substring(9)`;
+    const m = parseRobotConstruction(html);
+    expect(m).not.toBeNull();
+    expect(m!.substr1).toBe(9);
+    const url = assembleRobotUrl(m!);
+    expect(url).toBe('https://get.site.com/get_video?id=abcs%3D123%26token%3DXY');
+  });
+
+  it('finds get_video params via the video-id split method', () => {
+    // 10 chunks containing the id, then the id, then params starting chunk 11
+    const html10 =
+      Array(10).fill('x').join('/e/QS5xQ8Db4Y/') + '/e/QS5xQ8Db4Y' + "?expires=1&token=t' rest";
+    expect(extractGetVideoParams(html10, 'QS5xQ8Db4Y')).toBe('?expires=1&token=t');
+    expect(extractGetVideoParams('<p>nope</p>', 'QS5xQ8Db4Y')).toBeNull();
+  });
+});
+
+describe('ok.ru data-options extraction', () => {
+  const fixture = (metadata: string) =>
+    `<div data-options="${metadata.replace(/"/g, '&quot;')}"></div>`;
+
+  it('prefers hlsManifestUrl', () => {
+    const md = JSON.stringify({ hlsManifestUrl: 'https://vd.okcdn.ru/video.m3u8?sig=x' });
+    const out = extractOkruMediaUrl(fixture(`{"playerId":"p","flashvars":{"metadata":${md}}}`));
+    expect(out?.url).toBe('https://vd.okcdn.ru/video.m3u8?sig=x');
+    expect(out?.quality).toBeNull();
+  });
+
+  it('parses nested metadata JSON strings and falls back to videos[]', () => {
+    const md = JSON.stringify({
+      videos: [
+        { name: 'mobile', url: 'https://v/m.mp4', disallowed: false },
+        { name: 'full', url: 'https://v/full.mp4', disallowed: false },
+        { name: 'low', url: 'https://v/l.mp4', disallowed: true },
+      ],
+    });
+    const html = fixture(`{"flashvars":{"metadata":${JSON.stringify(md)}}}`);
+    const out = extractOkruMediaUrl(html);
+    expect(out?.url).toBe('https://v/full.mp4');
+    expect(out?.quality).toBe('full');
+  });
+
+  it('returns null without data-options or on garbage', () => {
+    expect(extractOkruMediaUrl('<html></html>')).toBeNull();
+    expect(extractOkruMediaUrl('<div data-options="not json"></div>')).toBeNull();
+  });
+});
+
+describe('tvp vod id extraction', () => {
+  it('reads the product id after the last comma', () => {
+    expect(
+      extractTvpProductId('https://vod.tvp.pl/seriale,18/ranczo-odcinki,316445/odcinek-1,S00E01,3092745')
+    ).toBe('3092745');
+    expect(extractTvpProductId('https://vod.tvp.pl/filmy-fabularne,136/samsara,2439790')).toBe(
+      '2439790'
+    );
+    expect(extractTvpProductId('https://vod.tvp.pl/')).toBeNull();
+    expect(extractTvpProductId('garbage')).toBeNull();
   });
 });
 

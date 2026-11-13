@@ -12,6 +12,9 @@ import { resolveVidmoly, vidmolyEmbedHosts } from './vidmoly.js';
 import { resolveVidoza, vidozaEmbedHosts } from './vidoza.js';
 import { resolveGenericPacker, genericPackerEmbedHosts } from './generic-packer.js';
 import { resolveByse, byseEmbedHosts } from './byse.js';
+import { resolveStreamtape, streamtapeEmbedHosts } from './streamtape.js';
+import { resolveOkru, okruEmbedHosts } from './okru.js';
+import { resolveTvpVod, tvpVodEmbedHosts } from './tvpvod.js';
 
 export interface ResolvedMedia {
   url: string;
@@ -70,6 +73,9 @@ const embedRegistry: { hosts: string[]; resolver: EmbedResolver }[] = [
   { hosts: vidozaEmbedHosts, resolver: { resolve: resolveVidoza } },
   { hosts: genericPackerEmbedHosts, resolver: { resolve: resolveGenericPacker } },
   { hosts: byseEmbedHosts, resolver: { resolve: resolveByse } },
+  { hosts: streamtapeEmbedHosts, resolver: { resolve: resolveStreamtape } },
+  { hosts: okruEmbedHosts, resolver: { resolve: resolveOkru } },
+  { hosts: tvpVodEmbedHosts, resolver: { resolve: resolveTvpVod } },
 ];
 
 /**
