@@ -241,6 +241,30 @@ function sleep(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/** Token endpoint has a per-page-load lag (1.1s) and a burst cap — resolve
+ * at most this many links, two at a time. Sequential × all rows measured
+ * 21-33s on a search page with 14 links. */
+const MAX_TOKEN_LINKS = 8;
+const TOKEN_CONCURRENCY = 2;
+
+async function mapLimit<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>
+): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, async () => {
+      while (next < items.length) {
+        const idx = next++;
+        out[idx] = await fn(items[idx]);
+      }
+    })
+  );
+  return out;
+}
+
 async function resolveRows(
   html: string,
   pageUrl: string,
@@ -252,20 +276,30 @@ async function resolveRows(
   const results: StreamResult[] = [];
   let rateLimited = false;
 
-  for (const row of rows) {
-    let url: string | null = row.embedUrl;
-    if (!url && row.linkId && !rateLimited) {
-      const resolved = await resolveTokenLink(pageUrl, row, routeToken, auth).catch(
-        () => null
-      );
-      if (resolved === 'rate-limited') {
-        rateLimited = true; // the whole burst is capped — stop burning requests
-        url = null;
-      } else {
-        url = resolved;
-      }
+  // resolve token links first (concurrently, capped); direct-embed rows pass through
+  const tokenIdx = rows
+    .map((row, i) => ({ row, i }))
+    .filter(({ row }) => !row.embedUrl && row.linkId)
+    .slice(0, MAX_TOKEN_LINKS);
+  const tokenUrls = await mapLimit(tokenIdx, TOKEN_CONCURRENCY, async ({ row }) => {
+    if (rateLimited) return null;
+    const resolved = await resolveTokenLink(pageUrl, row, routeToken, auth).catch(
+      () => null
+    );
+    if (resolved === 'rate-limited') {
+      rateLimited = true; // the whole burst is capped — stop burning requests
+      return null;
     }
-    if (!url || seen.has(url)) continue;
+    return resolved;
+  });
+
+  rows.forEach((row, i) => {
+    let url: string | null = row.embedUrl ?? null;
+    if (!url && row.linkId) {
+      const ti = tokenIdx.findIndex((t) => t.i === i);
+      if (ti !== -1) url = tokenUrls[ti];
+    }
+    if (!url || seen.has(url)) return;
     seen.add(url);
 
     results.push({
@@ -275,7 +309,7 @@ async function resolveRows(
       url,
       label: `${row.server}${row.version ? ` (${row.version})` : ''}`,
     });
-  }
+  });
 
   // burst-limited and nothing resolved: still surface one browser-openable
   // row so filman doesn't vanish from the results
