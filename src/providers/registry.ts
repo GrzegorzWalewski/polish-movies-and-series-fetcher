@@ -22,7 +22,6 @@ export const providers: Provider[] = [
   ekinoTv,
   obejrzyjTo,
   zaluknij,
-  cda,
   filman,
   bajeczki24,
   premiumsmart,
@@ -36,4 +35,7 @@ export const providers: Provider[] = [
   iitv,
   dokumentalne,
   mm35,
+  // cda.pl sinks to the bottom: premium-gated embeds often stall the player
+  // and direct CDN links expire fast — better as a last-resort source
+  cda,
 ];
