@@ -44,7 +44,7 @@ Interactive flow: type a query → pick the right TMDB result (Polish and Englis
 
 | Site | Notes |
 |---|---|
-| [filman.cc](https://filman.cc/) | requires manual `FILMAN_CC_COOKIE` + `FILMAN_CC_UA` in `.env` (logged-in session, reCAPTCHA-gated login) |
+| [filman.cc](https://filman.cc/) | logged-in session kept alive automatically (see Configuration) |
 | [ekino-tv.pl](https://ekino-tv.pl/) | movies + series |
 | [zaluknij.cc](https://zaluknij.cc/) | Cloudflare-protected, auto-bypassed via FlareSolverr |
 | [obejrzyj.to](https://obejrzyj.to/) | matched by IMDb ID |
@@ -72,8 +72,20 @@ All configuration lives in `.env` (see [.env.example](.env.example)):
 |---|---|
 | `TMDB_READ_TOKEN` | TMDB JWT read token (**required**) |
 | `FLARESOLVERR_URL` | FlareSolverr base URL; unset disables auto Cloudflare bypass |
-| `FILMAN_CC_COOKIE` / `FILMAN_CC_UA` | manual filman.cc session (UA+IP-bound, expires periodically) |
+| `FILMAN_CC_LOGIN` / `FILMAN_CC_PASSWORD` | filman.cc account for the auto-session (requires the two below) |
+| `TWOCAPTCHA_API_KEY` | [2captcha.com](https://2captcha.com/) API key — solves filman's reCAPTCHA login (~$0.003 per login; sessions are cached in gitignored `.filman-session.json`, so this cost is rare) |
+| `FILMAN_SESSION_FILE` | override the session-cache path (used by the Stremio addon's docker volume) |
+| `FILMAN_CC_COOKIE` / `FILMAN_CC_UA` | manual filman.cc session fallback (UA+IP-bound, expires periodically); ignored while auto-session is configured |
 | `CDA_HD_CC_COOKIE` / `CDA_HD_CC_UA` | manual cda-hd.cc override (normally auto-solved) |
+
+### How filman.cc stays logged in
+
+filman requires a logged-in session behind Cloudflare. With the auto-session
+configured, FlareSolverr re-solves the daily Cloudflare challenge for free
+(maintaining a consistent browser identity), and a full re-login — gated by a
+reCAPTCHA Enterprise captcha — happens only when the session itself expires,
+at which point 2Captcha solves the captcha automatically. The manual cookie
+pair remains as a fallback when auto mode is not fully configured.
 
 ## Legal note
 

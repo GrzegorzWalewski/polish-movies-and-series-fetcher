@@ -1,18 +1,29 @@
 import * as cheerio from 'cheerio';
 import { fetchPage } from '../utils/fetcher.js';
+import {
+  filmanIdentity,
+  filmanOnChallenge,
+  filmanOnLoginWall,
+  isLoginWall,
+  FilmanLoginWallError,
+  BASE_URL,
+  type FilmanIdentity,
+} from '../utils/filman-session.js';
 import type {
   Provider,
   ProviderSearchParams,
   StreamResult,
 } from '../types.js';
+import { CloudflareBlockedError } from '../types.js';
 import { pickMatches, cleanTitle, type SiteMatch } from './match.js';
 
-const BASE_URL = 'https://filman.cc';
-
 /**
- * filman.cc sits behind a Cloudflare managed challenge. Plain HTTP works only
- * with a valid cf_clearance cookie (tied to your browser's UA + IP): copy the
- * full cookie header for filman.cc from browser devtools into FILMAN_CC_COOKIE.
+ * filman.cc requires a logged-in session behind a Cloudflare challenge.
+ * Two modes (see utils/filman-session.ts):
+ *  - auto (preferred): FLARESOLVERR_URL + FILMAN_CC_LOGIN + FILMAN_CC_PASSWORD
+ *    + TWOCAPTCHA_API_KEY — CF re-solved daily by FlareSolverr, re-login via
+ *    2Captcha only when the session itself dies
+ *  - manual fallback: FILMAN_CC_COOKIE + FILMAN_CC_UA copied from browser
  */
 const COOKIE_ENV = 'FILMAN_CC_COOKIE';
 const UA_ENV = 'FILMAN_CC_UA';
@@ -21,20 +32,22 @@ function cookie(): string | undefined {
   return process.env[COOKIE_ENV]?.trim() || undefined;
 }
 
-/**
- * cf_clearance is only valid for the exact User-Agent of the browser that
- * solved the challenge — override it here when using a copied cookie.
- */
 function cookieHint(): string {
-  return `FILMAN_CC_COOKIE=<cf_clearance cookie copied from your browser devtools> and FILMAN_CC_UA=<that browser's exact User-Agent>`;
+  return `set FLARESOLVERR_URL + FILMAN_CC_LOGIN + FILMAN_CC_PASSWORD + TWOCAPTCHA_API_KEY (auto mode), or FILMAN_CC_COOKIE=<cookie header from browser devtools> + FILMAN_CC_UA=<that browser's User-Agent> (manual)`;
 }
 
-const reqHeaders = (referer: string): Record<string, string> => ({
+const reqHeaders = (referer: string, ua?: string): Record<string, string> => ({
   Referer: referer,
-  ...(process.env[UA_ENV]?.trim()
-    ? { 'User-Agent': process.env[UA_ENV].trim() }
+  ...(ua ?? process.env[UA_ENV]?.trim()
+    ? { 'User-Agent': ua ?? process.env[UA_ENV]!.trim() }
     : {}),
 });
+
+/** Identity-shaped auth from the manual env pair (used when auto is off). */
+function manualAuth(): { cookie: string; ua: string | undefined } | null {
+  const ck = cookie();
+  return ck ? { cookie: ck, ua: process.env[UA_ENV]?.trim() } : null;
+}
 
 /**
  * Parse filman search results (#item-list grid). Each item is a bootstrap col
@@ -175,7 +188,7 @@ async function resolveTokenLink(
   pageUrl: string,
   row: LinkRow,
   routeToken: string,
-  ck: string | undefined
+  auth: { cookie?: string; ua?: string }
 ): Promise<string | null> {
   if (!routeToken) return null;
 
@@ -185,11 +198,11 @@ async function resolveTokenLink(
   const tokenUrl = `${BASE_URL}/link/token?link_id=${encodeURIComponent(row.linkId!)}&rt=${encodeURIComponent(routeToken)}`;
   const reqOpts = {
     headers: {
-      ...reqHeaders(pageUrl),
+      ...reqHeaders(pageUrl, auth.ua),
       Accept: 'application/json, text/javascript, */*; q=0.01',
       'X-Requested-With': 'XMLHttpRequest',
     },
-    cookie: ck,
+    cookie: auth.cookie,
     site: 'filman.cc',
     retries: 0,
   };
@@ -229,7 +242,7 @@ async function resolveRows(
   html: string,
   pageUrl: string,
   routeToken: string,
-  ck: string | undefined
+  auth: { cookie?: string; ua?: string }
 ): Promise<StreamResult[]> {
   const rows = parseLinkRows(html);
   const seen = new Set<string>();
@@ -238,7 +251,7 @@ async function resolveRows(
   for (const row of rows) {
     let url: string | null = row.embedUrl;
     if (!url && row.linkId) {
-      url = await resolveTokenLink(pageUrl, row, routeToken, ck).catch(() => null);
+      url = await resolveTokenLink(pageUrl, row, routeToken, auth).catch(() => null);
     }
     if (!url || seen.has(url)) continue;
     seen.add(url);
@@ -254,55 +267,99 @@ async function resolveRows(
   return results;
 }
 
+async function searchOnce(
+  params: ProviderSearchParams,
+  query: string,
+  identity: FilmanIdentity | null
+): Promise<StreamResult[]> {
+  const manual = manualAuth();
+  const fetchOpts = identity
+    ? {
+        headers: {
+          Referer: `${BASE_URL}/`,
+          Cookie: identity.cookie,
+          'User-Agent': identity.ua,
+        },
+        site: 'filman.cc',
+        retries: 0,
+      }
+    : {
+        headers: reqHeaders(`${BASE_URL}/`),
+        cookie: manual?.cookie,
+        site: 'filman.cc',
+        cookieHint: cookieHint(),
+      };
+  const auth = identity ?? { cookie: manual?.cookie, ua: manual?.ua };
+
+  // /search is the current endpoint (older /wyszukiwarka & /item now just
+  // soft-redirect to the homepage with HTTP 200 — no 404 to trigger a fallback)
+  const res = await fetchPage(
+    `${BASE_URL}/search?phrase=${encodeURIComponent(query)}`,
+    fetchOpts
+  );
+
+  const html = await res.text();
+  // login wall — without an account filman shows the login page instead
+  if (isLoginWall(html)) throw new FilmanLoginWallError();
+
+  let items = parseSearchHtml(html);
+  items = items.filter((i) => (params.type === 'tv' ? i.type === 'tv' : i.type === 'movie'));
+  const matches = pickMatches(items, { ...params, title: query });
+  if (matches.length === 0) return [];
+
+  let pageUrl = matches[0].url;
+  let routeToken = '';
+  if (params.type === 'tv' && params.season && params.episode) {
+    const seriesRes = await fetchPage(pageUrl, fetchOpts);
+    const seriesHtml = await seriesRes.text();
+    routeToken = extractRouteToken(seriesHtml) ?? '';
+    const epUrl = findEpisodeUrl(seriesHtml, params.season, params.episode);
+    if (!epUrl) return [];
+    pageUrl = epUrl;
+  }
+
+  const pageRes = await fetchPage(pageUrl, fetchOpts);
+  const pageHtml = await pageRes.text();
+  routeToken = extractRouteToken(pageHtml) || routeToken;
+  return resolveRows(pageHtml, pageUrl, routeToken, auth);
+}
+
 export const filman: Provider = {
   name: 'filman.cc',
   baseUrl: BASE_URL,
 
   async search(params: ProviderSearchParams): Promise<StreamResult[]> {
-    const ck = cookie();
     const query = cleanTitle(params.title);
 
-    const fetchOpts = {
-      headers: reqHeaders(`${BASE_URL}/`),
-      cookie: ck,
-      site: this.name,
-      cookieHint: cookieHint(),
-    };
+    let identity: FilmanIdentity | null = await filmanIdentity();
+    let challengeRetried = false;
+    let loginRetried = false;
 
-    // /search is the current endpoint (older /wyszukiwarka & /item now just
-    // soft-redirect to the homepage with HTTP 200 — no 404 to trigger a fallback)
-    const res = await fetchPage(
-      `${BASE_URL}/search?phrase=${encodeURIComponent(query)}`,
-      fetchOpts
-    );
-
-    const html = await res.text();
-    // login wall — without an account filman shows the login page instead
-    if (/<title>\s*Logowanie/i.test(html)) {
-      throw new Error(
-        'filman.cc requires a logged-in account (login wall detected). Set FILMAN_CC_COOKIE including your session cookies.'
-      );
+    // The identity (when present) is passed as explicit headers, so fetchPage
+    // treats it as provider-owned and never injects the anonymous solver
+    // session. Recovery is handled here instead:
+    //  - CF challenge (clearance expired) -> re-solve, swap cf_clearance only
+    //  - login wall (session died) -> full re-login via 2Captcha
+    for (;;) {
+      try {
+        return await searchOnce(params, query, identity);
+      } catch (err) {
+        if (
+          identity &&
+          err instanceof CloudflareBlockedError &&
+          !challengeRetried
+        ) {
+          challengeRetried = true;
+          identity = (await filmanOnChallenge()) ?? identity;
+          continue;
+        }
+        if (err instanceof FilmanLoginWallError && !loginRetried) {
+          loginRetried = true;
+          identity = await filmanOnLoginWall();
+          if (identity) continue;
+        }
+        throw err;
+      }
     }
-
-    let items = parseSearchHtml(html);
-    items = items.filter((i) => (params.type === 'tv' ? i.type === 'tv' : i.type === 'movie'));
-    const matches = pickMatches(items, { ...params, title: query });
-    if (matches.length === 0) return [];
-
-    let pageUrl = matches[0].url;
-    let routeToken = '';
-    if (params.type === 'tv' && params.season && params.episode) {
-      const seriesRes = await fetchPage(pageUrl, fetchOpts);
-      const seriesHtml = await seriesRes.text();
-      routeToken = extractRouteToken(seriesHtml) ?? '';
-      const epUrl = findEpisodeUrl(seriesHtml, params.season, params.episode);
-      if (!epUrl) return [];
-      pageUrl = epUrl;
-    }
-
-    const pageRes = await fetchPage(pageUrl, fetchOpts);
-    const pageHtml = await pageRes.text();
-    routeToken = extractRouteToken(pageHtml) || routeToken;
-    return resolveRows(pageHtml, pageUrl, routeToken, ck);
   },
 };

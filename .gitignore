@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .env
+.filman-session.json
 *.log
 .openidea/
 .research-tmp/
