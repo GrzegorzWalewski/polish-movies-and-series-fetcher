@@ -8,6 +8,11 @@ import {
   type SolvedContext,
 } from './flaresolverr.js';
 
+// Some target sites (telekino.top) announce AAAA records whose endpoints
+// refuse connections, and node prefers IPv6 — pick IPv4 first everywhere.
+import { setDefaultResultOrder } from 'node:dns';
+setDefaultResultOrder('ipv4first');
+
 export interface FetchOptions {
   headers?: Record<string, string>;
   /** value of a Cookie header, e.g. "cf_clearance=...; PHPSESSID=..." */
