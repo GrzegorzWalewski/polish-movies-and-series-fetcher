@@ -98,6 +98,36 @@ describe('vider.info parseSearchResponse', () => {
     expect(parseSearchResponse(fixture('vider-404shell.html'))).toEqual([]);
     expect(parseSearchResponse('gateway timeout')).toEqual([]);
   });
+
+  it('parses the response-wrapped shape (live 2026-11-16)', () => {
+    const wrapped = parseSearchResponse(
+      fixture('vider-search-wrapped.json')
+    );
+    expect(wrapped.map((i) => i.code)).toEqual([
+      '1xmvxs',
+      '1xmsmc',
+      '1xmc1m',
+      '1xmc8s',
+      '1xm5e8',
+      'nsvx51',
+    ]);
+    expect(wrapped[0].fileId).toBe('620923');
+    expect(wrapped[0].url).toBe('https://vider.info/vid/+f1xmvxs');
+  });
+
+  it('parses hevc-suffixed SxxExx titles and bare-number uploads', () => {
+    const wrapped = parseSearchResponse(
+      fixture('vider-search-wrapped.json')
+    );
+    // "Znieczulenie S01e01_hevc" -> tv s1e1 titled "Znieczulenie"
+    expect(wrapped[4].type).toBe('tv');
+    expect(wrapped[4].title).toBe('Znieczulenie');
+    expect(wrapped[4].season).toBe(1);
+    expect(wrapped[4].episode).toBe(1);
+    // "Znieczulenie 8" has no S/E marker — stays movie-classified
+    expect(wrapped[2].type).toBe('movie');
+    expect(wrapped[2].title).toBe('Znieczulenie 8');
+  });
 });
 
 describe('vider.info response gates', () => {
@@ -158,5 +188,61 @@ describe('vider.info selectTvMatches', () => {
       params
     );
     expect(picked.map((m) => m.code)).toEqual(['xn8m5s']);
+  });
+
+  it('maps bare-number movie-classified uploads onto the absolute episode', () => {
+    const wrapped = parseSearchResponse(
+      fixture('vider-search-wrapped.json')
+    );
+    const params: ProviderSearchParams = {
+      imdbId: null,
+      type: 'tv',
+      title: 'Znieczulenie',
+      originalTitle: 'Znieczulenie',
+      year: '2026',
+      season: 1,
+      episode: 8,
+      absoluteEpisode: 8,
+    };
+    const picked = selectTvMatches(wrapped, params);
+    // exact S01E08 upload wins over the bare-number fallback
+    expect(picked.map((m) => m.code)).toEqual(['1xmvxs']);
+  });
+
+  it('uses bare-number uploads when no S/E upload exists', () => {
+    const wrapped = parseSearchResponse(
+      fixture('vider-search-wrapped.json')
+    ).filter((i) => i.code !== '1xmvxs'); // drop the S01E08 upload
+    const params: ProviderSearchParams = {
+      imdbId: null,
+      type: 'tv',
+      title: 'Znieczulenie',
+      originalTitle: 'Znieczulenie',
+      year: '2026',
+      season: 1,
+      episode: 8,
+      absoluteEpisode: 8,
+    };
+    const picked = selectTvMatches(wrapped, params);
+    expect(picked.map((m) => m.code)).toEqual(['1xmc1m']);
+    expect(picked[0].type).toBe('movie'); // fallback keeps the movie classification
+  });
+
+  it('never returns movie-classified rows without the bare-number fallback', () => {
+    const wrapped = parseSearchResponse(
+      fixture('vider-search-wrapped.json')
+    );
+    const params: ProviderSearchParams = {
+      imdbId: null,
+      type: 'tv',
+      title: 'Znieczulenie',
+      originalTitle: 'Znieczulenie',
+      year: '2026',
+      season: 1,
+      episode: 4,
+    };
+    const picked = selectTvMatches(wrapped, params);
+    expect(picked.every((m) => m.type === 'tv')).toBe(true);
+    expect(picked.some((m) => m.code === 'nsvx51')).toBe(false); // The Fix movie
   });
 });

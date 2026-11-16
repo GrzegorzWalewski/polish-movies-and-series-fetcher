@@ -130,6 +130,11 @@ interface SearchApiResponse {
   data_files?: { data?: SearchFileRaw[] };
   /** vider renders this transform of data_files client-side */
   data_files_render?: SearchFileRaw[];
+  /** 2026-11-16: search/get now wraps the payload in {response: ...} */
+  response?: {
+    data_files?: { data?: SearchFileRaw[] };
+    data_files_render?: SearchFileRaw[];
+  };
 }
 
 /** true when vider returned its generic error shell instead of content */
@@ -151,7 +156,12 @@ export function parseSearchResponse(data: string): ViderFile[] {
   } catch {
     return [];
   }
-  const files = json.data_files?.data ?? json.data_files_render ?? [];
+  const files =
+    json.response?.data_files?.data ??
+    json.response?.data_files_render ??
+    json.data_files?.data ??
+    json.data_files_render ??
+    [];
 
   const items: ViderFile[] = [];
   const seen = new Set<string>();
@@ -233,6 +243,9 @@ async function searchSite(query: string): Promise<string> {
 /**
  * TV preference: exact S/E first, else the show's absolute episode number
  * (vider series uploads are numbered continuously: "Title 09- ...").
+ * Last resort: uploads that only carry a trailing bare number
+ * ("Znieczulenie 8" — titleMeta classifies them as movies) map onto the
+ * absolute episode when nothing better matched.
  */
 export function selectTvMatches(
   matches: ViderFile[],
@@ -240,16 +253,24 @@ export function selectTvMatches(
 ): ViderFile[] {
   const sxe = matches.filter(
     (m) =>
-      m.season === (params.season ?? 1) && m.episode === params.episode
+      m.type === 'tv' &&
+      m.season === (params.season ?? 1) &&
+      m.episode === params.episode
   );
   if (sxe.length > 0) return sxe;
   if (params.absoluteEpisode) {
     const abs = matches.filter(
-      (m) => m.episode === params.absoluteEpisode
+      (m) => m.type === 'tv' && m.episode === params.absoluteEpisode
     );
     if (abs.length > 0) return abs;
+    const bare = matches.filter((m) => {
+      if (m.type !== 'movie' || m.year !== '') return false;
+      const mm = /\s(\d{1,4})$/.exec(m.title);
+      return mm !== null && Number(mm[1]) === params.absoluteEpisode;
+    });
+    if (bare.length > 0) return bare;
   }
-  return matches;
+  return matches.filter((m) => m.type === 'tv');
 }
 
 export const vider: Provider = {
@@ -258,11 +279,54 @@ export const vider: Provider = {
 
   async search(params: ProviderSearchParams): Promise<StreamResult[]> {
     const query = cleanTitle(params.title);
-    const items = parseSearchResponse(await searchSite(foldDiacritics(query)))
-      .filter((i) => i.type === params.type);
+    const q = foldDiacritics(query);
 
-    let matches = pickMatches(items, { ...params, title: query }) as ViderFile[];
-    if (params.type === 'tv') matches = selectTvMatches(matches, params);
+    // TV with a concrete S/E: search "title s01e02" first — vider's search
+    // ranks the exact episode first and its bare-title results rotate
+    // (repeated identical queries return different ~25-item subsets, so the
+    // target episode is often missing from the bare window)
+    let items: ViderFile[];
+    if (params.type === 'tv' && params.season && params.episode) {
+      const padded = `s${String(params.season).padStart(2, '0')}e${String(
+        params.episode
+      ).padStart(2, '0')}`;
+      items = parseSearchResponse(await searchSite(`${q} ${padded}`));
+      const hasTarget = items.some(
+        (i) =>
+          i.type === 'tv' &&
+          i.season === params.season &&
+          i.episode === params.episode
+      );
+      if (!hasTarget) {
+        try {
+          const extra = parseSearchResponse(await searchSite(q));
+          const seen = new Set(items.map((i) => i.code));
+          for (const item of extra) {
+            if (!seen.has(item.code)) {
+              seen.add(item.code);
+              items.push(item);
+            }
+          }
+        } catch {
+          // second pass is best-effort; first-pass results still count
+        }
+      }
+    } else {
+      items = parseSearchResponse(await searchSite(q));
+    }
+
+    let matches: ViderFile[];
+    if (params.type === 'movie') {
+      matches = pickMatches(
+        items.filter((i) => i.type === 'movie'),
+        { ...params, title: query }
+      ) as ViderFile[];
+    } else {
+      // tv: keep movie-classified uploads — selectTvMatches uses their
+      // trailing bare number as an absolute-episode fallback
+      matches = pickMatches(items, { ...params, title: query }) as ViderFile[];
+      matches = selectTvMatches(matches, params);
+    }
     if (matches.length === 0) return [];
 
     const out: StreamResult[] = [];
