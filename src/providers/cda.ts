@@ -248,21 +248,23 @@ export const cda: Provider = {
     if (params.type === 'movie') {
       const nonEpisodic = candidates.filter((m) => !looksEpisodic(m.title));
       if (nonEpisodic.length > 0) candidates = nonEpisodic;
-
-      // upload title naming a different year ("Obsesja. 2009.") — cda search
-      // results carry no year metadata, but uploads usually self-label
-      if (params.year) {
-        const sameEra = candidates.filter((m) => !yearDiffers(m.title, params.year!));
-        if (sameEra.length > 0) candidates = sameEra;
-      }
     }
 
-    // TMDB runtime (movies) — uploads of a different video ("some guy talking")
-    // are dropped by duration once the embed page reveals the real length
-    const expectedSeconds =
-      params.type === 'movie' && params.runtimeMinutes
-        ? params.runtimeMinutes * 60
-        : null;
+    // upload title naming a different year ("Obsesja. 2009.", "Krwawe
+    // znieczulenie film pl 2018") — cda search results carry no year
+    // metadata, but uploads usually self-label
+    if (params.year) {
+      const sameEra = candidates.filter((m) => !yearDiffers(m.title, params.year!));
+      if (sameEra.length > 0) candidates = sameEra;
+    }
+
+    // TMDB runtime — uploads of a different video ("some guy talking",
+    // "Znieczulenie:)" 5min cooking clip) are dropped by duration once the
+    // embed page reveals the real length. Movies: film length; series:
+    // average episode length (TMDB episode_run_time).
+    const expectedSeconds = params.runtimeMinutes
+      ? params.runtimeMinutes * 60
+      : null;
 
     const results: StreamResult[] = [];
     await Promise.all(

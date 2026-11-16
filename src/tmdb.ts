@@ -30,6 +30,7 @@ interface TmdbDetails {
   first_air_date?: string;
   runtime?: number | null;
   episode_run_time?: number[];
+  last_episode_to_air?: { runtime?: number | null } | null;
   external_ids?: { imdb_id?: string | null };
 }
 
@@ -149,7 +150,9 @@ export function mapTmdbDetails(
       '',
     runtimeMinutes: isMovie
       ? (details.runtime ?? null)
-      : (details.episode_run_time?.[0] ?? null),
+      : (details.episode_run_time?.[0] ??
+        details.last_episode_to_air?.runtime ??
+        null),
   };
 }
 
