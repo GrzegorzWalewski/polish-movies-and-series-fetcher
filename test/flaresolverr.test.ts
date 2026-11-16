@@ -158,7 +158,10 @@ describe('flaresolverr buildSolvedContext', () => {
 });
 
 describe('flaresolverr solved-context cache', () => {
-  beforeEach(clearSolvedContextsForTests);
+  beforeEach(() => {
+    process.env.FLARESOLVERR_CACHE_FILE = 'off'; // no disk I/O in tests
+    clearSolvedContextsForTests();
+  });
   afterEach(clearSolvedContextsForTests);
 
   const ctx = {

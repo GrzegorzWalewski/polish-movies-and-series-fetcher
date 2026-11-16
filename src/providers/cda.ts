@@ -157,6 +157,9 @@ async function resolveVideo(
       language,
       url: decodeCdaFile(video.file),
       label,
+      // mp4 CDN starves playback without the embed's Referer/UA — the addon
+      // proxy replays both
+      headers: { 'User-Agent': PLAYER_UA, Referer: embedUrl },
     });
 
     // remaining qualities need one refetch per quality name
@@ -179,6 +182,7 @@ async function resolveVideo(
             language,
             url: decodeCdaFile(qVideo.file),
             label,
+            headers: { 'User-Agent': PLAYER_UA, Referer: embedUrl },
           });
         }
       } catch {
@@ -192,6 +196,7 @@ async function resolveVideo(
       language,
       url: video.manifest_apple,
       label,
+      headers: { 'User-Agent': PLAYER_UA, Referer: embedUrl },
     });
   }
 

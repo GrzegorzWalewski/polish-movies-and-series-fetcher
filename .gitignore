@@ -5,3 +5,4 @@ dist/
 *.log
 .openidea/
 .research-tmp/
+.flaresolverr-cache.json

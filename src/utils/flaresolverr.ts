@@ -8,6 +8,9 @@
  * for subsequent fetches to that host.
  */
 
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+
 export interface FlareCookie {
   name: string;
   value: string;
@@ -116,10 +119,72 @@ export function buildSolvedContext(
 }
 
 // ---------------------------------------------------------------------------
-// Solve call + caches (process-lifetime)
+// Solve call + caches (process-lifetime, persisted to disk)
 
 const inFlight = new Map<string, Promise<FlareSolution>>();
 const solvedContexts = new Map<string, SolvedContext>();
+
+/**
+ * Solved contexts survive process restarts via a small JSON file next to
+ * .env (override with FLARESOLVERR_CACHE_FILE; value "off" disables disk
+ * I/O — used by tests). cf_clearance is IP+UA-bound, so a cache is only
+ * valid for the same egress IP — the same box re-reading it after a restart
+ * is exactly the intended reuse.
+ */
+const DEFAULT_CACHE_FILE = '.flaresolverr-cache.json';
+
+function cachePath(): string | null {
+  const env = process.env.FLARESOLVERR_CACHE_FILE?.trim();
+  if (env === 'off') return null;
+  return env || join(process.cwd(), DEFAULT_CACHE_FILE);
+}
+
+let cacheLoaded = false;
+
+function loadContexts(): void {
+  if (cacheLoaded) return;
+  cacheLoaded = true;
+  const path = cachePath();
+  if (!path) return;
+  try {
+    const raw = JSON.parse(readFileSync(path, 'utf-8')) as Record<string, SolvedContext>;
+    for (const [host, ctx] of Object.entries(raw)) {
+      if (
+        ctx &&
+        typeof ctx.userAgent === 'string' &&
+        typeof ctx.cookieHeader === 'string' &&
+        typeof ctx.expiresAt === 'number'
+      ) {
+        // -1 encodes a session cookie (Infinity doesn't survive JSON)
+        solvedContexts.set(host, {
+          userAgent: ctx.userAgent,
+          cookieHeader: ctx.cookieHeader,
+          expiresAt: ctx.expiresAt < 0 ? Infinity : ctx.expiresAt,
+        });
+      }
+    }
+  } catch {
+    /* no cache file yet */
+  }
+}
+
+function saveContexts(): void {
+  const path = cachePath();
+  if (!path) return;
+  const obj: Record<string, unknown> = {};
+  for (const [host, ctx] of solvedContexts) {
+    obj[host] = {
+      userAgent: ctx.userAgent,
+      cookieHeader: ctx.cookieHeader,
+      expiresAt: Number.isFinite(ctx.expiresAt) ? ctx.expiresAt : -1,
+    };
+  }
+  try {
+    writeFileSync(path, JSON.stringify(obj));
+  } catch {
+    /* best-effort */
+  }
+}
 
 /**
  * Ask FlareSolverr to solve the challenge for `url`.
@@ -172,17 +237,21 @@ export async function solveForHost(
 }
 
 export function getSolvedContext(host: string): SolvedContext | null {
+  loadContexts();
   const ctx = solvedContexts.get(host);
   if (!ctx) return null;
   if (ctx.expiresAt !== Infinity && Date.now() >= ctx.expiresAt) {
     solvedContexts.delete(host);
+    saveContexts();
     return null;
   }
   return ctx;
 }
 
 export function storeSolvedContext(host: string, ctx: SolvedContext): void {
+  loadContexts();
   solvedContexts.set(host, ctx);
+  saveContexts();
 }
 
 export function clearSolvedContextsForTests(): void {
