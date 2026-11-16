@@ -148,6 +148,24 @@ program
     }
   });
 
+program
+  .command('warm')
+  .description('Pre-solve Cloudflare challenges (zaluknij, cda-hd, filman) and cache the cookies')
+  .action(async () => {
+    loadEnvFile();
+    p.intro('msf warm — pre-solving Cloudflare challenges');
+
+    const { warmCfSites } = await import('./warm.js');
+    const results = await warmCfSites();
+
+    const failed = results.filter((r) => !r.ok);
+    if (failed.length > 0) {
+      p.log.warn(`${failed.length} site(s) failed: ${failed.map((f) => f.site).join(', ')}`);
+      process.exitCode = 1;
+    }
+    p.outro('Done — solved cookies are cached (persisted to .flaresolverr-cache.json).');
+  });
+
 program.parse();
 
 function printMedia(media: MediaResult): void {

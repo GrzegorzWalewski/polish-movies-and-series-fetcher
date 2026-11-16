@@ -202,7 +202,7 @@ function saveContexts(): void {
  */
 export async function solveForHost(
   url: string,
-  timeoutMs = 65000
+  timeoutMs = 130000
 ): Promise<FlareSolution> {
   const base = process.env.FLARESOLVERR_URL?.trim().replace(/\/+$/, '');
   if (!base) throw new Error('FLARESOLVERR_URL is not set');
@@ -221,7 +221,8 @@ export async function solveForHost(
       const res = await fetch(`${base}/v1`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cmd: 'request.get', url, maxTimeout: 60000 }),
+        // challenge JS needs up to ~80s on weak CPUs — 60s failed there
+        body: JSON.stringify({ cmd: 'request.get', url, maxTimeout: 120000 }),
         signal: AbortSignal.timeout(timeoutMs),
       });
       const text = await res.text();
