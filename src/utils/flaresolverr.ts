@@ -125,6 +125,16 @@ const inFlight = new Map<string, Promise<FlareSolution>>();
 const solvedContexts = new Map<string, SolvedContext>();
 
 /**
+ * Global solve queue. FlareSolverr runs headless Chrome; solving multiple
+ * hosts in parallel (providers sweep concurrently) starves weak CPUs and
+ * every challenge JS times out inside FlareSolverr's own budget — observed
+ * live: 3 simultaneous solves → all "Timeout after 60s", sequential → ok.
+ * Settling the previous task first also means its cookies get cached before
+ * the next solve starts.
+ */
+let lastSolve: Promise<unknown> = Promise.resolve();
+
+/**
  * Solved contexts survive process restarts via a small JSON file next to
  * .env (override with FLARESOLVERR_CACHE_FILE; value "off" disables disk
  * I/O — used by tests). cf_clearance is IP+UA-bound, so a cache is only
@@ -203,6 +213,11 @@ export async function solveForHost(
 
   const task = (async (): Promise<FlareSolution> => {
     try {
+      // queued wait is NOT counted against timeoutMs — the abort budget
+      // applies to the actual FlareSolverr call only (a provider-level
+      // timeout may still cut us off, but the solve then finishes in the
+      // background and its cookies are cached for subsequent requests)
+      await lastSolve.catch(() => {});
       const res = await fetch(`${base}/v1`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -233,6 +248,7 @@ export async function solveForHost(
   })();
 
   inFlight.set(host, task);
+  lastSolve = task.catch(() => {});
   return task;
 }
 
