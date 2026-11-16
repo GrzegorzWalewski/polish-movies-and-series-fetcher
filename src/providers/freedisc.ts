@@ -215,6 +215,10 @@ async function resolveFile(pageUrl: string): Promise<StreamResult[]> {
   const constructed = streamUrlFromPageUrl(pageUrl);
   if (mp4) add(mp4, 'freedisc.pl mp4');
   else if (constructed) add(constructed, 'freedisc.pl mp4');
+  // mp4 CDN 404/410s without a same-site Referer — the addon proxy replays it
+  if (out.length > 0 && out[0].url !== pageUrl) {
+    out[0].headers = { Referer: `${BASE_URL}/` };
+  }
   add(pageUrl, 'freedisc.pl page');
   return out;
 }
