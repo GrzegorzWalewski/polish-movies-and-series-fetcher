@@ -183,13 +183,14 @@ export function decodeTmpUrlPage(html: string): string | null {
   return out;
 }
 
-/** Resolve a current-generation link via the token endpoint. */
+/** Resolve a current-generation link via the token endpoint. Returns
+ * 'rate-limited' when the burst cap persists after the single wait-out. */
 async function resolveTokenLink(
   pageUrl: string,
   row: LinkRow,
   routeToken: string,
   auth: { cookie?: string; ua?: string }
-): Promise<string | null> {
+): Promise<string | 'rate-limited' | null> {
   if (!routeToken) return null;
 
   // the endpoint rejects requests right after page load (e2iplayer finding)
@@ -208,7 +209,9 @@ async function resolveTokenLink(
   };
 
   // the endpoint rate-limits bursts (HTTP 429 "Za szybko, spróbuj za chwilę")
-  // with a cooldown in the 30s-2min range — wait it out once
+  // with a cooldown in the 30s-2min range — wait it out once; if still
+  // limited, give up (the caller marks the sweep rate-limited and falls back
+  // to page-URL rows instead of burning the provider budget on more 429s)
   let res: Response | null = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
@@ -216,10 +219,10 @@ async function resolveTokenLink(
       break;
     } catch (err) {
       if (!(err instanceof Error) || !err.message.includes('HTTP 429')) return null;
-      if (attempt === 0) await sleep(60000);
+      if (attempt === 0) await sleep(30000);
     }
   }
-  if (!res) return null;
+  if (!res) return 'rate-limited';
 
   const json = JSON.parse(await res.text()) as { url?: string };
   if (!json.url) return null;
@@ -247,11 +250,20 @@ async function resolveRows(
   const rows = parseLinkRows(html);
   const seen = new Set<string>();
   const results: StreamResult[] = [];
+  let rateLimited = false;
 
   for (const row of rows) {
     let url: string | null = row.embedUrl;
-    if (!url && row.linkId) {
-      url = await resolveTokenLink(pageUrl, row, routeToken, auth).catch(() => null);
+    if (!url && row.linkId && !rateLimited) {
+      const resolved = await resolveTokenLink(pageUrl, row, routeToken, auth).catch(
+        () => null
+      );
+      if (resolved === 'rate-limited') {
+        rateLimited = true; // the whole burst is capped — stop burning requests
+        url = null;
+      } else {
+        url = resolved;
+      }
     }
     if (!url || seen.has(url)) continue;
     seen.add(url);
@@ -262,6 +274,18 @@ async function resolveRows(
       language: row.version || null,
       url,
       label: `${row.server}${row.version ? ` (${row.version})` : ''}`,
+    });
+  }
+
+  // burst-limited and nothing resolved: still surface one browser-openable
+  // row so filman doesn't vanish from the results
+  if (rateLimited && results.length === 0 && pageUrl) {
+    results.push({
+      provider: 'filman.cc',
+      quality: null,
+      language: null,
+      url: pageUrl,
+      label: 'page (rate-limited — open in browser)',
     });
   }
   return results;
