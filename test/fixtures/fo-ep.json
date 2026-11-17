@@ -1,0 +1,172 @@
+{
+ "title": {
+  "id": 26113,
+  "name": "Wiedźmin",
+  "type": "movie",
+  "release_date": "2019-12-20T00:00:00.000000Z",
+  "description": "Geralt z Rivii, zmutowany łowca potworów, podąża ścieżką przeznaczenia w świecie…",
+  "genre": null,
+  "tagline": "",
+  "runtime": null,
+  "trailer": null,
+  "budget": null,
+  "revenue": null,
+  "views": 790,
+  "popularity": 57,
+  "imdb_id": "tt5180504",
+  "tmdb_id": 71912,
+  "fully_synced": true,
+  "allow_update": true,
+  "created_at": "2025-10-30T19:29:55.000000Z",
+  "updated_at": "2026-11-17T15:54:17.000000Z",
+  "language": "en",
+  "country": null,
+  "original_title": "The Witcher",
+  "affiliate_link": null,
+  "certification": "ma",
+  "series_ended": false,
+  "is_series": true,
+  "show_videos": 0,
+  "adult": false,
+  "rating": 7.9,
+  "model_type": "title",
+  "vote_count": 6870,
+  "status": "ongoing",
+  "year": 2019,
+  "genres": [
+   {
+    "id": 19,
+    "name": "akcja-i-przygoda",
+    "display_name": "Akcja i Przygoda",
+    "model_type": "genre"
+   },
+   {
+    "id": 11,
+    "name": "dramat",
+    "display_name": "Dramat",
+    "model_type": "genre"
+   },
+   {
+    "id": 20,
+    "name": "sci-fi-fantasy",
+    "display_name": "Sci-Fi & Fantasy",
+    "model_type": "genre"
+   }
+  ],
+  "keywords": [
+   {
+    "id": 50,
+    "name": "based-on-novel-or-book",
+    "display_name": "Based on novel or book",
+    "created_at": "2023-12-12T17:45:11.000000Z",
+    "updated_at": "2023-12-12T17:45:11.000000Z",
+    "model_type": "keyword"
+   },
+   {
+    "id": 663,
+    "name": "dark-fantasy",
+    "display_name": "Dark fantasy",
+    "created_at": "2024-01-20T04:28:00.000000Z",
+    "updated_at": "2024-01-20T04:28:00.000000Z",
+    "model_type": "keyword"
+   },
+   {
+    "id": 301,
+    "name": "fantasy-world",
+    "display_name": "Fantasy world",
+    "created_at": "2023-12-17T16:42:41.000000Z",
+    "updated_at": "2023-12-17T16:42:41.000000Z",
+    "model_type": "keyword"
+   },
+   {
+    "id": 809,
+    "name": "magic",
+    "display_name": "Magic",
+    "created_at": "2024-02-07T07:48:41.000000Z",
+    "updated_at": "2024-02-07T07:48:41.000000Z",
+    "model_type": "keyword"
+   },
+   {
+    "id": 82,
+    "name": "monster",
+    "display_name": "Monster",
+    "created_at": "2023-12-12T19:22:08.000000Z",
+    "updated_at": "2023-12-12T19:22:08.000000Z",
+    "model_type": "keyword"
+   },
+   {
+    "id": 729,
+    "name": "mutant",
+    "display_name": "Mutant",
+    "created_at": "2024-01-31T19:43:57.000000Z",
+    "updated_at": "2024-01-31T19:43:57.000000Z",
+    "model_type": "keyword"
+   },
+   {
+    "id": 1039,
+    "name": "mutation",
+    "display_name": "Mutation",
+    "created_at": "2024-03-05T21:13:37.000000Z",
+    "updated_at": "2024-03-05T21:13:37.000000Z",
+    "model_type": "keyword"
+   }
+  ]
+ },
+ "episode": {
+  "id": 249222,
+  "name": "Początek końca",
+  "release_date": "2019-12-20T00:00:00.000000Z",
+  "title_id": 26113,
+  "season_id": 15636,
+  "season_number": 1,
+  "episode_number": 1,
+  "runtime": 62,
+  "allow_update": true,
+  "created_at": "2025-10-30T19:30:11.000000Z",
+  "updated_at": "2026-11-17T15:54:07.000000Z",
+  "temp_id": null,
+  "popularity": null,
+  "model_type": "episode",
+  "rating": 7.9,
+  "vote_count": 471,
+  "status": "released",
+  "year": 2019,
+  "videos": [
+   {
+    "id": 113320,
+    "name": "Odcinek 1",
+    "src": "https://doodstream.com/e/7vacl83iui9b",
+    "type": "embed",
+    "quality": "hd",
+    "title_id": 26113,
+    "season_num": 1,
+    "episode_num": 1,
+    "origin": "external",
+    "downvotes": 0,
+    "upvotes": 0,
+    "approved": true,
+    "order": 0,
+    "created_at": "2025-10-30T19:31:03.000000Z",
+    "updated_at": "2025-10-30T19:31:03.000000Z",
+    "user_id": null,
+    "language": "pl",
+    "category": "full",
+    "episode_id": 249222,
+    "score": null,
+    "model_type": "video"
+   }
+  ],
+  "primary_video": {
+   "id": 113320,
+   "title_id": 26113,
+   "name": "Odcinek 1",
+   "category": "full",
+   "episode_id": 249222,
+   "season_num": 1,
+   "episode_num": 1,
+   "score": null,
+   "model_type": "video"
+  }
+ },
+ "loader": "episodePage"
+}

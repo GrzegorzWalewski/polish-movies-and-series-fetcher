@@ -1,0 +1,40 @@
+{
+ "pagination": {
+  "current_page": 1,
+  "data": [
+   {
+    "id": 15639,
+    "release_date": "2025-10-30T00:00:00.000000Z",
+    "number": 4,
+    "title_id": 26113,
+    "episodes_count": 8,
+    "model_type": "season"
+   },
+   {
+    "id": 15638,
+    "release_date": "2023-06-29T00:00:00.000000Z",
+    "number": 3,
+    "title_id": 26113,
+    "episodes_count": 8,
+    "model_type": "season"
+   },
+   {
+    "id": 15637,
+    "release_date": "2021-12-17T00:00:00.000000Z",
+    "number": 2,
+    "title_id": 26113,
+    "episodes_count": 8,
+    "model_type": "season"
+   }
+  ],
+  "from": 1,
+  "last_page": 1,
+  "next_page": null,
+  "per_page": 8,
+  "prev_page": null,
+  "to": 4,
+  "total": 4
+ },
+ "status": "success",
+ "seo": null
+}

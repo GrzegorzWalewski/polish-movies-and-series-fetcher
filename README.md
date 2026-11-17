@@ -60,6 +60,7 @@ Interactive flow: type a query → pick the right TMDB result (Polish and Englis
 | [iitv.info](https://iitv.info/) | series only |
 | [freedisc.pl](https://freedisc.pl/) | user uploads; geo-blocked outside Poland |
 | [premiumsmart.eu](https://premiumsmart.eu/) | JSON API |
+| [filmyonline.cc](https://filmyonline.cc/) | JSON API, auto-bypassed via FlareSolverr |
 | [vider.info](https://vider.info/) | search currently degraded site-side; stream CDN verified |
 
 Each provider matches by title (+ Polish *and* original titles), with a year preference; episodes are matched per season/episode, including sites that number episodes continuously across seasons.
