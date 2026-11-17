@@ -39,8 +39,18 @@ export async function resolveMaxvod(
     const target = loc.startsWith('http') ? loc : new URL(loc, url).toString();
     if (/maxvod\.tv\/login/.test(target)) return null;
 
-    // "player z reklamami" twins 302 to an embed page (vidara.to & co) —
-    // only accept targets that actually serve media (ranged probe, headers only)
+    // Known embed host → resolve directly, WITHOUT the ranged probe below:
+    // probing a DoodStream-family embed (myvidplay/playmogo) hits their
+    // Cloudflare wall with node fetch, which on some server IPs holds the
+    // connection open until timeout — burning the whole budget before the
+    // (curl-based) embed resolver gets a chance to run.
+    if (classifyStreamUrl(target) === 'embed') {
+      return resolveEmbed(target, timeoutMs);
+    }
+
+    // everything else: only accept targets that actually serve media
+    // (ranged probe, headers only) — "player z reklamami" twins 302 to
+    // embed pages (vidara.to & co) that have no resolver
     const probe = await fetch(target, {
       headers: {
         'User-Agent': DEFAULT_EMBED_UA,
@@ -60,13 +70,6 @@ export async function resolveMaxvod(
       !/^video\//i.test(ct) &&
       !/^application\/(vnd\.apple\.mpegurl|x-mpegurl|octet-stream)/i.test(ct)
     ) {
-      // "player z reklamami" iframe twins 302 into a DoodStream-family embed
-      // (myvidplay.com → playmogo.com) — the addon's resolve stage is
-      // single-pass, so chain the embed resolution here. Failure → null
-      // (row stays external).
-      if (classifyStreamUrl(target) === 'embed') {
-        return resolveEmbed(target, timeoutMs);
-      }
       return null;
     }
     return { url: target, headers: { Referer: SITE_REFERER } };

@@ -117,10 +117,11 @@ describe('dood resolver', () => {
     );
     // md5 request went to the final origin, not the input alias
     expect(fetchMock.mock.calls[1]?.[0]).toBe(`https://playmogo.com${md5Path}`);
-    // Referer still points at the original embed URL
+    // Referer points at the final (post-redirect) embed URL — same as the
+    // primary curl path
     const headers = (fetchMock.mock.calls[1]?.[1] as { headers?: Record<string, string> })
       ?.headers;
-    expect(headers?.Referer).toBe(inputUrl);
+    expect(headers?.Referer).toBe(finalUrl);
   });
 
   it('returns null when the embed page has no pass_md5 path (curl disabled)', async () => {
@@ -194,6 +195,41 @@ describe('dood resolver', () => {
     // execFileMock stays at its default rejecting implementation
     expect(await resolveDood('https://playmogo.com/e/abc', 5_000)).toBeNull();
   });
+
+  it('tries curl FIRST — node fetch is never called when curl succeeds', async () => {
+    const md5Path = '/pass_md5/8f3a/token';
+    // any node fetch is a failure (server-side CF holds the connection open,
+    // burning the whole budget) — resolution must not depend on it
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new Error('node fetch must not be called when curl succeeds');
+      })
+    );
+    execFileMock.mockImplementation(
+      (
+        _cmd: string,
+        args: string[],
+        _opts: unknown,
+        cb: (e: Error | null, stdout?: string) => void
+      ) => {
+        const url = args.at(-1) ?? '';
+        if (url.includes('/e/')) {
+          cb(null, `<script>var a='${md5Path}';</script>\n@@https://playmogo.com/e/abc`);
+        } else if (url.includes('/pass_md5/')) {
+          cb(null, 'https://v.doodcdn.la/hls/x/playlist\n@@' + url);
+        } else {
+          cb(new Error(`unexpected curl url: ${url}`));
+        }
+      }
+    );
+
+    const out = await resolveDood('https://playmogo.com/e/abc', 5_000);
+    expect(out).not.toBeNull();
+    expect(out!.url).toMatch(
+      /^https:\/\/v\.doodcdn\.la\/hls\/x\/playlist[A-Za-z0-9]{10}\?token=token$/
+    );
+  });
 });
 
 describe('maxvod resolver', () => {
@@ -247,6 +283,12 @@ describe('maxvod resolver', () => {
       /^https:\/\/v\.doodcdn\.la\/hls\/x\/playlist[A-Za-z0-9]{10}\?token=token$/
     );
     expect(out!.headers).toEqual({ Referer: 'https://dood.la/' });
+    // embed targets skip the ranged probe — probing a dood-family embed
+    // hits their CF wall with node fetch (hangs on some server IPs)
+    const probed = fetchMock.mock.calls.some(
+      ([u, init]) => u.toString() === target && (init as RequestInit)?.redirect === 'manual'
+    );
+    expect(probed).toBe(false);
   });
 
   it('returns null when the chained embed cannot be resolved', async () => {

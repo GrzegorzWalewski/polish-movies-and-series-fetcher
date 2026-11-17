@@ -59,11 +59,12 @@ export function parseCurlOutput(stdout: string): {
 }
 
 /**
- * curl child-process fallback for the two dood metadata fetches. The dood
- * Cloudflare front 403s node's TLS fingerprint (embed + /pass_md5/ only —
- * the video CDN itself serves node fine), while plain curl with a Chrome UA
- * passes. Only used when the in-process fetch misses; a missing curl binary
- * yields null and the row stays external as before.
+ * curl child-process fetch for the two dood metadata fetches — the PRIMARY
+ * path. The dood Cloudflare front 403s (or on some server IPs silently
+ * holds open) node's TLS fingerprint for the embed page and /pass_md5/
+ * (the video CDN itself serves node fine), while plain curl with a Chrome
+ * UA passes. A missing curl binary yields null and the caller falls back
+ * to the in-process fetch.
  */
 async function fetchViaCurl(
   url: string,
@@ -97,17 +98,26 @@ export async function resolveDood(
   const embedUrl = url.replace('/d/', '/e/');
   const headers = { Referer: url };
 
-  let page = await fetchEmbedText(embedUrl, { headers, timeoutMs });
-  let embedText = page && page.ok ? page.text : null;
-  let embedFinalUrl = page?.url ?? embedUrl;
-  if (!embedText || !extractMd5Path(embedText)) {
-    // CF wall (or dead embed) — curl fallback before giving up
-    const via = await fetchViaCurl(embedUrl, url, timeoutMs);
-    if (!via) return null;
-    embedText = via.body;
-    embedFinalUrl = via.finalUrl ?? embedUrl;
-    if (!extractMd5Path(embedText)) return null;
+  // curl FIRST, node fetch only as fallback: dood's Cloudflare front always
+  // rejects node's TLS fingerprint — a fast 403 locally, but a silent HOLD
+  // (no response until timeout) on some server IPs — so a node-first attempt
+  // burns the entire per-embed budget before the working curl path starts.
+  let embedText: string | null = null;
+  let embedFinalUrl = embedUrl;
+  const viaEmbed = await fetchViaCurl(embedUrl, url, timeoutMs);
+  if (viaEmbed) {
+    embedText = viaEmbed.body;
+    embedFinalUrl = viaEmbed.finalUrl ?? embedUrl;
   }
+  if (!embedText || !extractMd5Path(embedText)) {
+    // curl missing/failed — node fetch (works on non-challenged aliases)
+    const page = await fetchEmbedText(embedUrl, { headers, timeoutMs });
+    if (page && page.ok) {
+      embedText = page.text;
+      embedFinalUrl = page.url ?? embedUrl;
+    }
+  }
+  if (!embedText || !extractMd5Path(embedText)) return null;
 
   const md5Path = extractMd5Path(embedText)!;
 
@@ -121,11 +131,15 @@ export async function resolveDood(
     return null;
   }
 
-  const md5 = await fetchEmbedText(origin + md5Path, { headers, timeoutMs });
-  let streamBase = md5 && md5.ok ? md5.text.trim() : null;
-  if (!streamBase || !/^https?:\/\//.test(streamBase)) {
-    const via = await fetchViaCurl(origin + md5Path, embedFinalUrl, timeoutMs);
-    streamBase = via?.body.trim() ?? '';
+  // same order as the embed fetch: curl first, node fetch as fallback
+  const viaMd5 = await fetchViaCurl(origin + md5Path, embedFinalUrl, timeoutMs);
+  let streamBase = viaMd5?.body.trim() ?? '';
+  if (!/^https?:\/\//.test(streamBase)) {
+    const md5 = await fetchEmbedText(origin + md5Path, {
+      headers: { Referer: embedFinalUrl },
+      timeoutMs,
+    });
+    if (md5 && md5.ok) streamBase = md5.text.trim();
   }
   if (!/^https?:\/\//.test(streamBase)) return null;
 
