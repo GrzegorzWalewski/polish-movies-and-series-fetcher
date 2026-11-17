@@ -7,6 +7,9 @@ import {
   parseSearchHtml,
   parseWatchHtml,
   buildEpisodeUrl,
+  isEkinoGate,
+  extractEkinoTarget,
+  buildVerifyBody,
 } from '../src/providers/ekino-tv.js';
 import {
   extractBootstrapData,
@@ -110,6 +113,39 @@ describe('ekino-tv', () => {
       'https://ekino.ws/serie/show/wiedzmin/'
     );
     expect(series).toHaveLength(0);
+  });
+
+  it('detects the Turnstile gate page (live capture)', () => {
+    const gateHtml =
+      '<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=hCaptchaCallback"></script>' +
+      '<div id="center"><div id="gcaptcha"></div></div><script>window.hCaptchaCallback = function(){\n' +
+      "turnstile.render('#gcaptcha', { sitekey:'0x4AAAAAAAFuHEOflkh2qqPw', callback: function(token) {\n" +
+      "$.post('/watch/verify.php', {verify:token}, function(re){ if(re.error){ alert('err'); } }); }); };</script>";
+    expect(isEkinoGate(gateHtml)).toBe(true);
+    expect(isEkinoGate('<html>normal interstitial</html>')).toBe(false);
+    expect(isEkinoGate('<html>verify.php mentioned alone</html>')).toBe(false);
+  });
+
+  it('extracts play.ekino.link tokens without leaking surrounding markup', () => {
+    // live page has an unquoted href — the token charset stops the capture
+    const html = '<a href=https://play.ekino.link/6bu7kIH9RCFrCfFe3pCbUcvOYILlxyJqRWRlbfOm8lkIZORiXT_DnTvbD2iT46IGRlDr <style>body{}</style>';
+    expect(extractEkinoTarget(html)).toBe(
+      'https://play.ekino.link/6bu7kIH9RCFrCfFe3pCbUcvOYILlxyJqRWRlbfOm8lkIZORiXT_DnTvbD2iT46IGRlDr'
+    );
+    expect(extractEkinoTarget('<p>nothing</p>')).toBeNull();
+  });
+
+  it('extracts direct hoster links from the buttonprch anchor (both attr orders)', () => {
+    const hrefFirst =
+      '<a href="https://dood.la/d/6o5ppdo390hnqu1px00mlrk0j9ixb" target="_blank" class="buttonprch"></a>';
+    expect(extractEkinoTarget(hrefFirst)).toBe('https://dood.la/d/6o5ppdo390hnqu1px00mlrk0j9ixb');
+    const classFirst =
+      '<a class="buttonprch" href="https://voe.sx/e/abc123def456">GO</a>';
+    expect(extractEkinoTarget(classFirst)).toBe('https://voe.sx/e/abc123def456');
+  });
+
+  it('builds the form-encoded verify body', () => {
+    expect(buildVerifyBody('tok.en-x')).toBe('verify=tok.en-x');
   });
 });
 

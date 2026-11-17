@@ -1,5 +1,8 @@
 import * as cheerio from 'cheerio';
 import { fetchPage } from '../utils/fetcher.js';
+import { absorbCookies } from '../utils/filman-session.js';
+import { solveTurnstile } from '../utils/twocaptcha.js';
+import { DEFAULT_EMBED_UA } from '../utils/resolvers/index.js';
 import type {
   Provider,
   ProviderSearchParams,
@@ -125,12 +128,140 @@ export function buildEpisodeUrl(
   return `${BASE_URL}/serie/watch/${slug}+season[${season}]+episode[${episode}]+`;
 }
 
+// ---------------------------------------------------------------------------
+// watch/f interstitial handling
+//
+// Two interstitial shapes exist:
+//   1. "player" server → href to a single-use play.ekino.link token whose
+//      page embeds the real hoster iframe (byse-family mfw09.org etc.)
+//   2. direct hoster link in the button anchor (class "buttonprch"), e.g.
+//      dood.la/d/...
+// Some sessions additionally hit a Cloudflare Turnstile gate first
+// (sitekey rendered, callback $.post('/watch/verify.php', {verify: token}) →
+// server-side session → reload shows the real interstitial).
+
+/** Pure: does this page carry the Turnstile gate? */
+export function isEkinoGate(html: string): boolean {
+  return html.includes('verify.php') && /turnstile/i.test(html);
+}
+
+/** Pure: extract the interstitial's target (play token or direct hoster link). */
+export function extractEkinoTarget(html: string): string | null {
+  const play = /href="?(https:\/\/play\.ekino\.link\/[A-Za-z0-9_-]{20,})/.exec(html)?.[1];
+  if (play) return play;
+  // button anchor — href/class attribute order varies
+  const anchor =
+    /<a[^>]*class="[^"]*buttonprch[^"]*"[^>]*href=?"?(https?:\/\/[A-Za-z0-9_./?%=&:#-]+)/i.exec(html)?.[1] ??
+    /<a[^>]*href=?"?(https?:\/\/[A-Za-z0-9_./?%=&:#-]+)"?[^>]*class="[^"]*buttonprch[^"]*"/i.exec(html)?.[1];
+  return anchor ?? null;
+}
+
+/** Pure: form body the gate JS posts ($.post serialize shape). */
+export function buildVerifyBody(token: string): string {
+  return new URLSearchParams({ verify: token }).toString();
+}
+
+interface EkinoGateSession {
+  cookieHeader: string;
+  ua: string;
+  savedAt: number;
+}
+
+let gateSession: EkinoGateSession | null = null;
+let gateInflight: Promise<EkinoGateSession | null> | null = null;
+
+/** Test hook. */
+export function resetEkinoGateForTests(): void {
+  gateSession = null;
+  gateInflight = null;
+}
+
+const GATE_TIMEOUT_MS = 20_000;
+
 /**
- * watch/f URLs are interstitials ("Przejdź do odtwarzacza" button): the page
- * JS redirects to a single-use play.ekino.link token, whose page embeds the
- * real hoster player in an iframe. Follow the chain server-side and return
- * the embed URL (byse-family mfw09.org etc.) so the resolver layer can make
- * it playable. Any failure → null (keep the interstitial URL as external).
+ * Solve the Turnstile gate once: GET the watch page (seed cookies),
+ * solve via 2Captcha, POST /watch/verify.php {verify} (form-encoded,
+ * per the page's own $.post), absorb the session Set-Cookie.
+ */
+async function solveGateSession(watchUrl: string): Promise<EkinoGateSession | null> {
+  const apiKey = process.env.TWOCAPTCHA_API_KEY?.trim();
+  if (!apiKey) return null;
+  const ua = DEFAULT_EMBED_UA;
+  try {
+    const p1 = await fetch(watchUrl, {
+      headers: { 'User-Agent': ua, Referer: HEADERS.Referer },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(GATE_TIMEOUT_MS),
+    });
+    let jar = absorbCookies('', p1.headers.getSetCookie());
+    await p1.text();
+
+    const token = await solveTurnstile(apiKey, '0x4AAAAAAAFuHEOflkh2qqPw', watchUrl);
+
+    const p2 = await fetch(`${BASE_URL}/watch/verify.php`, {
+      method: 'POST',
+      headers: {
+        'User-Agent': ua,
+        Referer: watchUrl,
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        ...(jar ? { Cookie: jar } : {}),
+      },
+      body: buildVerifyBody(token),
+      redirect: 'manual',
+      signal: AbortSignal.timeout(GATE_TIMEOUT_MS),
+    });
+    jar = absorbCookies(jar, p2.headers.getSetCookie());
+    const re = (await p2.json().catch(() => null)) as { error?: unknown } | null;
+    if (re && re.error) return null;
+    if (!jar) return null;
+    return { cookieHeader: jar, ua, savedAt: Date.now() };
+  } catch {
+    return null;
+  }
+}
+
+/** Single-flight: parallel resolves share one solve (captcha spend). */
+async function ensureGateSession(watchUrl: string): Promise<EkinoGateSession | null> {
+  if (gateSession) return gateSession;
+  if (!gateInflight) {
+    gateInflight = solveGateSession(watchUrl)
+      .then((s) => {
+        gateSession = s;
+        gateInflight = null;
+        return s;
+      })
+      .catch(() => {
+        gateInflight = null;
+        return null;
+      });
+  }
+  return gateInflight;
+}
+
+/** Re-fetch the watch page with the verified session; null on failure. */
+async function fetchBehindGate(watchUrl: string, sess: EkinoGateSession): Promise<string | null> {
+  try {
+    const res = await fetch(watchUrl, {
+      headers: { 'User-Agent': sess.ua, Referer: HEADERS.Referer, Cookie: sess.cookieHeader },
+      redirect: 'follow',
+      signal: AbortSignal.timeout(GATE_TIMEOUT_MS),
+    });
+    const html = await res.text();
+    return extractEkinoTarget(html);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * watch/f URLs are interstitials ("Przejdź do odtwarzacza" button): either a
+ * single-use play.ekino.link token whose page embeds the real hoster player,
+ * or a direct hoster link in the button anchor. A Turnstile gate may front
+ * both (solved once per process via 2Captcha; rows stay external without a
+ * TWOCAPTCHA_API_KEY). Follow the chain server-side and return the embed /
+ * direct URL so the resolver layer can make it playable. Any failure → null
+ * (keep the interstitial URL as external).
  */
 export async function resolveEkinoWatch(watchUrl: string): Promise<string | null> {
   try {
@@ -139,12 +270,30 @@ export async function resolveEkinoWatch(watchUrl: string): Promise<string | null
       site: 'ekino-tv.pl',
       retries: 0,
     });
-    const playUrl = /href="(https:\/\/play\.ekino\.link\/[^"]+)"/.exec(
-      await wRes.text()
-    )?.[1];
-    if (!playUrl) return null;
+    const html = await wRes.text();
 
-    const pRes = await fetchPage(playUrl, {
+    let target = extractEkinoTarget(html);
+    if (!target && isEkinoGate(html)) {
+      let sess = await ensureGateSession(watchUrl);
+      if (sess) {
+        target = await fetchBehindGate(watchUrl, sess);
+        if (!target) {
+          // cached session died (or was never valid) — one fresh solve
+          gateSession = null;
+          sess = await solveGateSession(watchUrl);
+          if (sess) {
+            gateSession = sess;
+            target = await fetchBehindGate(watchUrl, sess);
+          }
+        }
+      }
+    }
+    if (!target) return null;
+
+    // play.ekino.link tokens need one more hop: the token page embeds the hoster
+    if (!target.includes('play.ekino.link')) return target;
+
+    const pRes = await fetchPage(target, {
       headers: { Referer: 'https://ekino.ws/' },
       site: 'ekino-tv.pl',
       retries: 0,

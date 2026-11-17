@@ -29,7 +29,8 @@ export function parseTaskResult(json: unknown): TwoCaptchaResult {
   }
   if (obj.status === 'ready') {
     const solution = obj.solution as Record<string, unknown> | undefined;
-    const token = solution?.gRecaptchaResponse;
+    // reCAPTCHA tasks return gRecaptchaResponse, Turnstile returns token
+    const token = solution?.gRecaptchaResponse ?? solution?.token;
     if (typeof token === 'string' && token) return { token, error: null };
     return { token: null, error: 'ready response without token' };
   }
@@ -53,20 +54,31 @@ export function buildCreateTaskBody(
   };
 }
 
-/**
- * Solve a reCAPTCHA v2 Enterprise challenge and return the token.
- * Typical solve time 15-60s; resolves within ~timeoutMs or throws.
- */
-export async function solveRecaptchaEnterprise(
+/** Pure: the createTask body for a proxyless Cloudflare Turnstile job. */
+export function buildTurnstileTaskBody(
   clientKey: string,
   sitekey: string,
-  url: string,
-  timeoutMs = 120000
+  url: string
+): Record<string, unknown> {
+  return {
+    clientKey,
+    task: {
+      type: 'TurnstileTaskProxyless',
+      websiteURL: url,
+      websiteKey: sitekey,
+    },
+  };
+}
+
+async function solveTask(
+  createBody: Record<string, unknown>,
+  clientKey: string,
+  timeoutMs: number
 ): Promise<string> {
   const createRes = await fetch(`${API}/createTask`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(buildCreateTaskBody(clientKey, sitekey, url)),
+    body: JSON.stringify(createBody),
     signal: AbortSignal.timeout(30000),
   });
   const created = (await createRes.json()) as { errorId?: number; errorCode?: string; taskId?: number };
@@ -88,4 +100,30 @@ export async function solveRecaptchaEnterprise(
     if (token) return token;
   }
   throw new Error('2captcha: solve timed out');
+}
+
+/**
+ * Solve a reCAPTCHA v2 Enterprise challenge and return the token.
+ * Typical solve time 15-60s; resolves within ~timeoutMs or throws.
+ */
+export async function solveRecaptchaEnterprise(
+  clientKey: string,
+  sitekey: string,
+  url: string,
+  timeoutMs = 120000
+): Promise<string> {
+  return solveTask(buildCreateTaskBody(clientKey, sitekey, url), clientKey, timeoutMs);
+}
+
+/**
+ * Solve a Cloudflare Turnstile challenge and return the token.
+ * Typical solve time 5-30s; resolves within ~timeoutMs or throws.
+ */
+export async function solveTurnstile(
+  clientKey: string,
+  sitekey: string,
+  url: string,
+  timeoutMs = 120000
+): Promise<string> {
+  return solveTask(buildTurnstileTaskBody(clientKey, sitekey, url), clientKey, timeoutMs);
 }
