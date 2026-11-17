@@ -199,7 +199,9 @@ export const filmyonline: Provider = {
     if (!match) return [];
 
     if (params.type === 'tv' && params.season && params.episode) {
-      const seasons = await api<FoSeason[]>(`titles/${match.id}/seasons`);
+      const seasons = await api<FoSeason[] | { pagination?: { data?: FoSeason[] } }>(
+        `titles/${match.id}/seasons`
+      );
       const season = (Array.isArray(seasons) ? seasons : seasons.pagination?.data ?? []).find(
         (s) => String(s.number) === String(params.season)
       );
