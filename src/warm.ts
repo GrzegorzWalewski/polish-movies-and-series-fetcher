@@ -114,6 +114,22 @@ export async function warmCfSites(): Promise<WarmOutcome[]> {
     `${out[1].ok ? '✓' : '✗'} cda-hd.cc — ${out[1].seconds.toFixed(0)}s ${out[1].note}`
   );
 
+  s.start('filmyonline.cc: fetching homepage (solves CF if challenged)...');
+  out.push(
+    await timed('filmyonline.cc', async () => {
+      await fetchPage('https://filmyonline.cc/', {
+        site: 'filmyonline.cc',
+        retries: 0,
+      });
+      return 'ok';
+    })
+  );
+  s.stop(
+    `${out[out.length - 1].ok ? '✓' : '✗'} filmyonline.cc — ${
+      out[out.length - 1].seconds.toFixed(0)
+    }s ${out[out.length - 1].note}`
+  );
+
   s.start('filman.cc: checking session clearance...');
   out.push(await timed('filman.cc', warmFilman));
   s.stop(
