@@ -13,6 +13,9 @@ export const doodEmbedHosts = [
   'dood.la', 'dood.li', 'dood.yt', 'dood.re', 'dood.wf', 'dood.pm',
   'dood.so', 'dood.to', 'dood.watch', 'dood.cx', 'dood.ws', 'dood.pro',
   'vide0.net', 'dooood.com', 'ds2play.com', 'dsvplay.com', 'mydood.org',
+  // DoodStream-family alias fronts (maxvod iframe rows land here via
+  // myvidplay.com → playmogo.com redirects)
+  'myvidplay.com', 'playmogo.com',
 ];
 
 const ALPHABET =
@@ -47,7 +50,9 @@ export async function resolveDood(
 
   let origin: string;
   try {
-    const u = new URL(embedUrl);
+    // alias domains 301 between each other (myvidplay → playmogo) — the
+    // /pass_md5/ call must go against the FINAL origin, not the input one
+    const u = new URL(page.url ?? embedUrl);
     origin = `${u.protocol}//${u.host}`;
   } catch {
     return null;

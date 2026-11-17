@@ -7,10 +7,12 @@ import type {
 } from '../types.js';
 import { pickMatches, cleanTitle, type SiteMatch } from './match.js';
 
-const BASE_URL = 'https://ekino-tv.pl';
+// ekino-tv.pl is a permanent 301 → ekino.ws (2026-11); hit the new domain
+// directly. Provider name / FlareSolverr site key stay 'ekino-tv.pl'.
+const BASE_URL = 'https://ekino.ws';
 
 const HEADERS = {
-  Referer: 'https://ekino-tv.pl/',
+  Referer: 'https://ekino.ws/',
 };
 
 /** Parse ekino-tv search results page HTML. */
@@ -143,7 +145,7 @@ export async function resolveEkinoWatch(watchUrl: string): Promise<string | null
     if (!playUrl) return null;
 
     const pRes = await fetchPage(playUrl, {
-      headers: { Referer: 'https://ekino-tv.pl/' },
+      headers: { Referer: 'https://ekino.ws/' },
       site: 'ekino-tv.pl',
       retries: 0,
     });

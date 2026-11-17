@@ -45,7 +45,7 @@ Interactive flow: type a query → pick the right TMDB result (Polish and Englis
 | Site | Notes |
 |---|---|
 | [filman.cc](https://filman.cc/) | logged-in session kept alive automatically (see Configuration) |
-| [ekino-tv.pl](https://ekino-tv.pl/) | movies + series |
+| [ekino.ws](https://ekino.ws/) (formerly ekino-tv.pl) | movies + series |
 | [zaluknij.cc](https://zaluknij.cc/) | Cloudflare-protected, auto-bypassed via FlareSolverr |
 | [obejrzyj.to](https://obejrzyj.to/) | matched by IMDb ID |
 | [cda.pl](https://www.cda.pl/) | most popular content is premium-gated; free uploads are mostly older titles |

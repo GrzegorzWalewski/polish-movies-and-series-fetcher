@@ -11,7 +11,7 @@
  */
 
 import type { ResolvedMedia } from './index.js';
-import { DEFAULT_EMBED_UA } from './index.js';
+import { classifyStreamUrl, resolveEmbed, DEFAULT_EMBED_UA } from './index.js';
 
 export const maxvodEmbedHosts = ['maxvod.tv'];
 
@@ -60,6 +60,13 @@ export async function resolveMaxvod(
       !/^video\//i.test(ct) &&
       !/^application\/(vnd\.apple\.mpegurl|x-mpegurl|octet-stream)/i.test(ct)
     ) {
+      // "player z reklamami" iframe twins 302 into a DoodStream-family embed
+      // (myvidplay.com → playmogo.com) — the addon's resolve stage is
+      // single-pass, so chain the embed resolution here. Failure → null
+      // (row stays external).
+      if (classifyStreamUrl(target) === 'embed') {
+        return resolveEmbed(target, timeoutMs);
+      }
       return null;
     }
     return { url: target, headers: { Referer: SITE_REFERER } };

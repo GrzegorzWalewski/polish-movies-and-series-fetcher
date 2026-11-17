@@ -40,7 +40,7 @@ describe('ekino-tv', () => {
     expect(results).toHaveLength(3);
     expect(results[1]).toEqual({
       title: 'Wiedźmin',
-      url: 'https://ekino-tv.pl/serie/show/wiedzmin-the-witcher/',
+      url: 'https://ekino.ws/serie/show/wiedzmin-the-witcher/',
       year: '2019',
     });
   });
@@ -51,41 +51,41 @@ describe('ekino-tv', () => {
     const matches = pickMatches(results, params);
     // both entries match by title; year 2019 (from item id) picks the series
     expect(matches[0].url).toBe(
-      'https://ekino-tv.pl/serie/show/wiedzmin-the-witcher/'
+      'https://ekino.ws/serie/show/wiedzmin-the-witcher/'
     );
   });
 
   it('builds episode url from serie show url (port of zetta slug logic)', () => {
     expect(
       buildEpisodeUrl(
-        'https://ekino-tv.pl/serie/show/wiedzmin-the-witcher/',
+        'https://ekino.ws/serie/show/wiedzmin-the-witcher/',
         1,
         1
       )
     ).toBe(
-      'https://ekino-tv.pl/serie/watch/wiedzmin-the-witcher+season[1]+episode[1]+'
+      'https://ekino.ws/serie/watch/wiedzmin-the-witcher+season[1]+episode[1]+'
     );
     expect(
-      buildEpisodeUrl('https://ekino-tv.pl/show/12873/', 2, 10)
+      buildEpisodeUrl('https://ekino.ws/show/12873/', 2, 10)
     ).toBe(
-      'https://ekino-tv.pl/serie/watch/12873+season[2]+episode[10]+'
+      'https://ekino.ws/serie/watch/12873+season[2]+episode[10]+'
     );
   });
 
   it('parses watch page: keeps player/hqq/jetload, filters mix/upzone', () => {
     const sources = parseWatchHtml(
       fixture('ekino-watch.html'),
-      'https://ekino-tv.pl/serie/watch/wiedzmin-the-witcher+season[1]+episode[1]+'
+      'https://ekino.ws/serie/watch/wiedzmin-the-witcher+season[1]+episode[1]+'
     );
     const urls = sources.map((s) => s.url);
     expect(urls).toContain(
-      'https://ekino-tv.pl/watch/f/player/s4z8VrloSf4BrpL6vEfTvsLfhpqeoVsXhDfY1w'
+      'https://ekino.ws/watch/f/player/s4z8VrloSf4BrpL6vEfTvsLfhpqeoVsXhDfY1w'
     );
     expect(urls).toContain(
-      'https://ekino-tv.pl/watch/f/hqq/hlf1u-eQ1dBWToExHAd8tKXJKwPUInHnLTWKdA'
+      'https://ekino.ws/watch/f/hqq/hlf1u-eQ1dBWToExHAd8tKXJKwPUInHnLTWKdA'
     );
     expect(urls).toContain(
-      'https://ekino-tv.pl/watch/f/jetload/5xwfYzLXZmUC8u-SRQF9HXOoFiDfxtfBCb_5Gg'
+      'https://ekino.ws/watch/f/jetload/5xwfYzLXZmUC8u-SRQF9HXOoFiDfxtfBCb_5Gg'
     );
     // excluded hosts
     expect(urls.some((u) => u.includes('mix'))).toBe(false);
@@ -99,15 +99,15 @@ describe('ekino-tv', () => {
   it('falls back to default player when no ids found (movies only)', () => {
     const sources = parseWatchHtml(
       '<html><body></body></html>',
-      'https://ekino-tv.pl/movie/show/obsesja/42466/'
+      'https://ekino.ws/movie/show/obsesja/42466/'
     );
     expect(sources).toHaveLength(1);
-    expect(sources[0].url).toBe('https://ekino-tv.pl/movie/watch/obsesja/42466/');
+    expect(sources[0].url).toBe('https://ekino.ws/movie/watch/obsesja/42466/');
     expect(sources[0].label).toBe('DEFAULT PLAYER');
     // series show pages have no watch equivalent — no fallback
     const series = parseWatchHtml(
       '<html><body></body></html>',
-      'https://ekino-tv.pl/serie/show/wiedzmin/'
+      'https://ekino.ws/serie/show/wiedzmin/'
     );
     expect(series).toHaveLength(0);
   });
