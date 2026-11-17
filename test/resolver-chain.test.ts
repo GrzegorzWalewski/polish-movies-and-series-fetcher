@@ -4,10 +4,45 @@ import { resolveDood, doodEmbedHosts } from '../src/utils/resolvers/dood.js';
 import { resolveMaxvod } from '../src/utils/resolvers/maxvod.js';
 
 /**
- * Global-fetch stubbing only — dood.ts / maxvod.ts sit inside index.ts's own
- * import cycle, so module-mocking index.js can't rebind their captured
- * references. Stubbing fetch exercises the REAL resolver chain end-to-end.
+ * curl (dood CF fallback) is disabled in tests by default — execFile rejects.
+ * Individual tests re-mock it to simulate curl output. Global-fetch stubbing
+ * for the rest — dood.ts / maxvod.ts sit inside index.ts's own import cycle,
+ * so module-mocking index.js can't rebind their captured references; node
+ * builtins have no cycle, so child_process CAN be module-mocked.
  */
+const { execFileMock } = vi.hoisted(() => {
+  const fn = vi.fn(
+    (
+      _cmd: string,
+      _args: string[],
+      _opts: unknown,
+      cb: (e: Error | null, stdout?: string, stderr?: string) => void
+    ) => {
+      cb(new Error('curl disabled in tests'), '', '');
+    }
+  );
+  // promisify(execFile) must resolve {stdout, stderr} — attach node's custom
+  // promisify symbol, otherwise it resolves the bare stdout string
+  (fn as unknown as Record<symbol, unknown>)[
+    Symbol.for('nodejs.util.promisify.custom')
+  ] = (cmd: string, args: string[], opts: unknown) =>
+    new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+      (
+        fn as unknown as (
+          c: string,
+          a: string[],
+          o: unknown,
+          cb: (e: Error | null, stdout?: string, stderr?: string) => void
+        ) => void
+      )(cmd, args, opts, (err, stdout, stderr) => {
+        if (err) reject(err);
+        else resolve({ stdout: stdout ?? '', stderr: stderr ?? '' });
+      });
+    });
+  return { execFileMock: fn };
+});
+
+vi.mock('node:child_process', () => ({ execFile: execFileMock }));
 
 /** Full response stand-in for redirect:'follow' fetches (fetchEmbedText). */
 function htmlRes(text: string, url: string): Response {
@@ -30,9 +65,24 @@ function headersRes(status: number, headers: Record<string, string>): Response {
   } as unknown as Response;
 }
 
+/** Default curl mock: reject (binary "missing") — tests re-mock as needed. */
+function resetCurlMock(): void {
+  execFileMock.mockImplementation(
+    (
+      _cmd: string,
+      _args: string[],
+      _opts: unknown,
+      cb: (e: Error | null, stdout?: string, stderr?: string) => void
+    ) => {
+      cb(new Error('curl disabled in tests'), '', '');
+    }
+  );
+}
+
 describe('dood resolver', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    resetCurlMock();
   });
 
   it('includes the dood-family alias hosts', () => {
@@ -73,18 +123,83 @@ describe('dood resolver', () => {
     expect(headers?.Referer).toBe(inputUrl);
   });
 
-  it('returns null when the embed page has no pass_md5 path', async () => {
+  it('returns null when the embed page has no pass_md5 path (curl disabled)', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async () => htmlRes('<html><body>nothing</body></html>', 'https://playmogo.com/e/x'))
     );
     expect(await resolveDood('https://playmogo.com/e/x', 5_000)).toBeNull();
   });
+
+  it('falls back to curl when node fetch is CF-blocked (403)', async () => {
+    const md5Path = '/pass_md5/8f3a/token';
+    // node fetch: everything 403s (dood Cloudflare wall, 2026-11-17)
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: false,
+        status: 403,
+        url: 'https://playmogo.com/e/abc',
+        headers: { get: () => 'text/html' },
+        body: { cancel: async () => {} },
+        text: async () => '<html>challenge</html>',
+      }))
+    );
+    // curl passes: embed page (with -w final-url trailer) then pass_md5 text
+    execFileMock.mockImplementation(
+      (
+        _cmd: string,
+        args: string[],
+        _opts: unknown,
+        cb: (e: Error | null, stdout?: string) => void
+      ) => {
+        const url = args.at(-1) ?? '';
+        if (url.includes('/e/')) {
+          cb(null, `<script>var a='${md5Path}';</script>\n@@https://playmogo.com/e/abc`);
+        } else if (url.includes('/pass_md5/')) {
+          cb(null, 'https://v.doodcdn.la/hls/x/playlist\n@@' + url);
+        } else {
+          cb(new Error(`unexpected curl url: ${url}`));
+        }
+      }
+    );
+
+    const out = await resolveDood('https://playmogo.com/e/abc', 5_000);
+    expect(out).not.toBeNull();
+    expect(out!.url).toMatch(
+      /^https:\/\/v\.doodcdn\.la\/hls\/x\/playlist[A-Za-z0-9]{10}\?token=token$/
+    );
+    expect(out!.headers).toEqual({ Referer: 'https://dood.la/' });
+    // pass_md5 went to the curl-reported FINAL origin
+    const md5Call = execFileMock.mock.calls.find((c) =>
+      String(c[1].at(-1)).includes('/pass_md5/')
+    );
+    expect(String(md5Call?.[1].at(-1))).toBe(
+      `https://playmogo.com${md5Path}`
+    );
+  });
+
+  it('returns null when curl is unavailable (binary missing)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({
+        ok: false,
+        status: 403,
+        url: 'https://playmogo.com/e/abc',
+        headers: { get: () => 'text/html' },
+        body: { cancel: async () => {} },
+        text: async () => '<html>challenge</html>',
+      }))
+    );
+    // execFileMock stays at its default rejecting implementation
+    expect(await resolveDood('https://playmogo.com/e/abc', 5_000)).toBeNull();
+  });
 });
 
 describe('maxvod resolver', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    resetCurlMock();
   });
 
   it('returns the redirect target with site referer for media targets', async () => {
