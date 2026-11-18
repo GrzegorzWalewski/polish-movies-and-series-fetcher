@@ -110,12 +110,18 @@ function bytesOf(s: string): Uint8Array {
   return out;
 }
 
-/** Smallest i with >= difficulty leading zero bits, or null on timeout. */
-export function solvePow(
+/** Smallest i with >= difficulty leading zero bits, or null on timeout.
+ * ASYNC + yielding: each 1024-hash batch yields to the event loop
+ * (setImmediate) so concurrent solves, timers and pending I/O progress —
+ * the previous fully-synchronous loop blocked the whole process for up to
+ * timeoutMs per solve, starving every parallel embed resolution (on the
+ * 4-core server several concurrent byse embeds froze the resolve stage and
+ * nearly all embeds degraded to external links). */
+export async function solvePow(
   nonce: string,
   difficulty: number,
   timeoutMs = 15_000
-): string | null {
+): Promise<string | null> {
   if (difficulty <= 0) return '0';
   const prefix = `${nonce}:`;
   const start = Date.now();
@@ -128,6 +134,7 @@ export function solvePow(
       i++;
     }
     if (Date.now() - start > timeoutMs) return null;
+    await new Promise((r) => setImmediate(r));
   }
 }
 
@@ -245,8 +252,13 @@ export async function resolveByse(
   const { pow_nonce, pow_difficulty, pow_token } = challenge;
   if (!pow_nonce || typeof pow_difficulty !== 'number' || !pow_token) return null;
 
-  // 2+3. solve + verify
-  const solution = solvePow(pow_nonce, pow_difficulty);
+  // 2+3. solve + verify — bound the PoW so it gives up before the embed
+  // budget is exhausted (leaves time for verify + playback round trips)
+  const solution = await solvePow(
+    pow_nonce,
+    pow_difficulty,
+    Math.max(2_000, timeoutMs - 3_000)
+  );
   if (solution === null) return null;
   const verifyRes = await fetchEmbedText(
     `${api}/api/videos/${code}/embed/captcha/verify`,

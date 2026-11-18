@@ -206,8 +206,8 @@ describe('byse pow + playback decrypt', () => {
     expect(leadingZeroBits(new Uint32Array([0x00010000, 0]))).toBe(15);
   });
 
-  it('solvePow finds a solution satisfying the difficulty', () => {
-    const solution = solvePow('testnonce', 8, 5_000);
+  it('solvePow finds a solution satisfying the difficulty', async () => {
+    const solution = await solvePow('testnonce', 8, 5_000);
     expect(solution).not.toBeNull();
     const digest = customHash256(
       new TextEncoder().encode(`testnonce:${solution}`)
@@ -215,8 +215,8 @@ describe('byse pow + playback decrypt', () => {
     expect(leadingZeroBits(digest)).toBeGreaterThanOrEqual(8);
   });
 
-  it('solvePow with zero difficulty short-circuits', () => {
-    expect(solvePow('n', 0, 100)).toBe('0');
+  it('solvePow with zero difficulty short-circuits', async () => {
+    expect(await solvePow('n', 0, 100)).toBe('0');
   });
 
   it('decrypts the playback payload using the version permutation', async () => {
