@@ -280,6 +280,23 @@ function loadCurrent(): FilmanSessionState | null {
   return current ?? (current = loadSessionState());
 }
 
+// A CF re-solve (~75-80s on the server CPU) or a 2Captcha login (15-60s+)
+// must run ONCE per process, not once per concurrent request — without the
+// shared promise, every parallel filman request queued its own
+// FlareSolverr/captcha flow and ALL of them blew the addon's provider
+// timeout (repeated 60s healthz timeouts on back-to-back titles).
+let recoveryInFlight: Promise<FilmanIdentity | null> | null = null;
+
+function singleFlight(
+  fn: () => Promise<FilmanIdentity | null>
+): Promise<FilmanIdentity | null> {
+  if (recoveryInFlight) return recoveryInFlight;
+  recoveryInFlight = fn().finally(() => {
+    recoveryInFlight = null;
+  });
+  return recoveryInFlight;
+}
+
 /**
  * Main entry: the identity to use for filman requests.
  * Precedence: auto mode (fully configured) > manual env pair. Null when
@@ -290,7 +307,7 @@ export async function filmanIdentity(): Promise<FilmanIdentity | null> {
   if (autoConfigured()) {
     const state = loadCurrent();
     if (state) return { cookie: state.cookieHeader, ua: state.ua };
-    return loginFlow();
+    return singleFlight(loginFlow);
   }
   return manualIdentity();
 }
@@ -299,12 +316,12 @@ export async function filmanIdentity(): Promise<FilmanIdentity | null> {
 export async function filmanOnChallenge(): Promise<FilmanIdentity | null> {
   if (!autoConfigured()) return null;
   const state = loadCurrent();
-  if (!state) return loginFlow();
-  return refreshClearanceFlow(state);
+  if (!state) return singleFlight(loginFlow);
+  return singleFlight(() => refreshClearanceFlow(state));
 }
 
 /** Recovery hook: a request with the cached identity hit the login wall. */
 export async function filmanOnLoginWall(): Promise<FilmanIdentity | null> {
   if (!autoConfigured()) return null;
-  return loginFlow();
+  return singleFlight(loginFlow);
 }

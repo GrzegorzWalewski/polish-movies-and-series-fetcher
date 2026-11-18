@@ -209,9 +209,11 @@ async function resolveTokenLink(
   };
 
   // the endpoint rate-limits bursts (HTTP 429 "Za szybko, spróbuj za chwilę")
-  // with a cooldown in the 30s-2min range — wait it out once; if still
-  // limited, give up (the caller marks the sweep rate-limited and falls back
-  // to page-URL rows instead of burning the provider budget on more 429s)
+  // with a cooldown in the 30s-2min range — wait it out ONCE, briefly: a long
+  // in-request wait made filman dominate the whole cold-request latency
+  // (addon responses stalled 60s+ on back-to-back titles). If still limited,
+  // give up (the caller marks the sweep rate-limited and falls back to
+  // page-URL rows; the burst cap has usually lifted by the next request).
   let res: Response | null = null;
   for (let attempt = 0; attempt < 2; attempt++) {
     try {
@@ -219,7 +221,7 @@ async function resolveTokenLink(
       break;
     } catch (err) {
       if (!(err instanceof Error) || !err.message.includes('HTTP 429')) return null;
-      if (attempt === 0) await sleep(30000);
+      if (attempt === 0) await sleep(12_000);
     }
   }
   if (!res) return 'rate-limited';
